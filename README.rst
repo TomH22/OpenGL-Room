@@ -1,5 +1,7 @@
-# OpenGL-Room
-C# SharpGL OpenGL room example
+OpenGL-Room
+===========
+
+C# room example
 
 .. image:: https://i.imgur.com/tVF55xK.png
 
