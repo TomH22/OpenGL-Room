@@ -3,7 +3,7 @@ OpenGL-Room
 
 C# room example
 
-.. image:: https://i.imgur.com/tVF55xK.png
+.. image:: https://i.imgur.com/JloRtUD.png
 
 This app make use of the https://github.com/dwmkerr/sharpgl library.
 The SharpGL API wraps all OpenGL commands and contains 
