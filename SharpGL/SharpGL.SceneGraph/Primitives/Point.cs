@@ -41,6 +41,7 @@ namespace SharpGL.SceneGraph.Primitives
         /// </summary>
         private void CreateDisplayList(OpenGL gl)
         {
+
             //  Create the display list. 
             displayList = new DisplayList();
 

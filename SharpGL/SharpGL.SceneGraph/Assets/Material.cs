@@ -215,6 +215,11 @@ namespace SharpGL.SceneGraph.Assets
             return getMaterial(getBrush(36, 36, 36), gl);
         }
 
+        public static Material LightBlue(OpenGL gl)
+        {
+            return getMaterial(getBrush(0x42, 0xa6, 0x9a), gl);
+        }
+
         public static Material Green(OpenGL gl)
         {
             return getMaterial(getBrush(80, 233, 80), gl);
@@ -223,6 +228,11 @@ namespace SharpGL.SceneGraph.Assets
         public static Material Red(OpenGL gl)
         {
             return getMaterial(getBrush(255, 0, 0), gl);
+        }
+
+        public static Material Yellow(OpenGL gl)
+        {
+            return getMaterial(getBrush(255, 255, 0), gl);
         }
 
         /// <summary>

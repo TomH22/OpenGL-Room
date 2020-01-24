@@ -114,6 +114,10 @@
             this.sceneControl1.Size = new System.Drawing.Size(468, 435);
             this.sceneControl1.TabIndex = 5;
             this.sceneControl1.MouseClick += new System.Windows.Forms.MouseEventHandler(this.sceneControl1_MouseClick);
+            this.sceneControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(FormSceneSample_MouseDown);
+            this.sceneControl1.MouseMove += new System.Windows.Forms.MouseEventHandler(FormSceneSample_MouseMove);
+            this.sceneControl1.MouseUp += new System.Windows.Forms.MouseEventHandler(sceneControl1_MouseUp);
+            this.sceneControl1.MouseWheel += FormSceneSample_MouseWheel;
             // 
             // toolStripContainer1
             // 

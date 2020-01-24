@@ -30,15 +30,21 @@ namespace SharpGL.SceneGraph.Quadrics
             SharpGL.SceneGraph.Primitives.Polygon polyFill = new Polygon(this.Name);
             polyFill.Material = Materials.Pink(gl);
             polyFill.PolygonMode = OpenGL.GL_FILL;
-            polyFill.PolygonOffset = false;
+            polyFill.PolygonOffset = 0f;
             polyFill.AddFaceFromVertexData(vertex1);
+            polyFill.EnableCullFace = true;
+            polyFill.CullFace = FrontBack.BACK;
+            //polyFill.DepthFunc = DepthFunc.EQUAL;
             this.Children.Add(polyFill);
 
             SharpGL.SceneGraph.Primitives.Polygon polyBorder = new Polygon(this.Name);
             polyBorder.Material = Materials.DarkGrey(gl);
             polyBorder.PolygonMode = OpenGL.GL_LINE;
-            polyBorder.PolygonOffset = true;
+            polyBorder.PolygonOffset = -1f;
             polyBorder.AddFaceFromVertexData(vertex1);
+            polyBorder.EnableCullFace = true;
+            polyBorder.CullFace = FrontBack.BACK;
+            //polyFill.DepthFunc = DepthFunc.EQUAL;
             this.Children.Add(polyBorder);
 
             this.polyFill = polyFill;

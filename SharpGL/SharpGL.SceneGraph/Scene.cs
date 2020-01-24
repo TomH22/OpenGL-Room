@@ -26,7 +26,6 @@ namespace SharpGL.SceneGraph
     [XmlInclude(typeof(OrthographicCamera))]
     [XmlInclude(typeof(FrustumCamera))]
     [XmlInclude(typeof(LookAtCamera))]
-    [XmlInclude(typeof(ArcBallCamera))]
 	public class Scene : IHasOpenGLContext
 	{
         /// <summary>
@@ -69,9 +68,13 @@ namespace SharpGL.SceneGraph
 			//	Create a select buffer.
 			uint[] selectBuffer = new uint[512];
 			gl.SelectBuffer(512, selectBuffer);
-			
-			//	Enter select mode.
-			gl.RenderMode(OpenGL.GL_SELECT);
+
+            //	Create a feedback buffer.
+            //float[] feedbackBuffer = new float[512];
+            //gl.FeedbackBuffer(512, OpenGL.GL_3D,feedbackBuffer);
+
+            //	Enter select mode.
+            gl.RenderMode(OpenGL.GL_SELECT);
                         
 			//	Initialise the names, and add the first name.
 			gl.InitNames();
@@ -127,11 +130,9 @@ namespace SharpGL.SceneGraph
 
         public virtual void AddPoint(int x, int y)
         {
-
-
             SharpGL.SceneGraph.Primitives.Point point = new SharpGL.SceneGraph.Primitives.Point();
             point.Vertex = new Vertex(x, y, 0);
-
+        
             SceneContainer.AddChild(point);
         }
 
@@ -160,6 +161,10 @@ namespace SharpGL.SceneGraph
                 OpenGL.GL_STENCIL_BUFFER_BIT);
 
             //gl.BindTexture(OpenGL.GL_TEXTURE_2D, 0);
+            //gl.Enable(OpenGL.GL_LINE_SMOOTH);
+            //gl.Enable(OpenGL.GL_POLYGON_SMOOTH);
+            //gl.Hint(OpenGL.GL_LINE_SMOOTH_HINT, OpenGL.GL_NICEST);
+            //gl.Hint(OpenGL.GL_POLYGON_SMOOTH_HINT, OpenGL.GL_NICEST);
 
             //  Render the root element, this will then render the whole
             //  of the scene tree.

@@ -14,6 +14,10 @@ using SharpGL.SceneGraph.Assets;
 
 namespace SharpGL.SceneGraph.Primitives
 {
+    public enum FrontBack { FRONT_AND_BACK, FRONT, BACK,  }
+    public enum Way { CW, CCW }// CW and CCW stand for clockwise and counterclockwise
+    public enum DepthFunc { NEVER, LESS, EQUAL, LEQUAL, GREATER, NOTEQUAL, GEQUAL, ALAYS }
+
     /// <summary>
     /// A polygon contains a set of 'faces' which are indexes into a single list
     /// of vertices. The main thing about polygons is that they are easily editable
@@ -30,19 +34,203 @@ namespace SharpGL.SceneGraph.Primitives
         IDeepCloneable<Polygon>,
         IHasMaterial
     {
+        // ==== Performec OpenGL gl.CullFace(..) ====
+        public FrontBack CullFace;
+        public Way Way;
+        public bool EnableCullFace;
+
+        public DepthFunc DepthFunc;
+
+        public uint PolygonMode;       // OpenGL.GL_FILL or OpenGL.GL_LINE
+        public float PolygonOffset;     // true: draw lines on area, false: no glPolygonOffset(..)
+        public bool PolygonOffsetFill;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Polygon"/> class.
         /// </summary>
 		public Polygon()
         {
             Name = "Polygon";
+            init();
         }
 
         public Polygon(string name)
         {
             this.Name = name;
+            init();
         }
 
+        private void init()
+        {
+            CullFace = FrontBack.FRONT_AND_BACK;
+            EnableCullFace = false;
+            Way = Way.CCW;
+            DepthFunc = DepthFunc.LESS;// standard
+            PolygonMode = OpenGL.GL_FILL;
+            PolygonOffset = 0f;
+            PolygonOffsetFill = false;
+        }
+
+        /// <summary>
+        /// Render to the provided instance of OpenGL.
+        /// </summary>
+        /// <param name="gl">The OpenGL instance.</param>
+        /// <param name="renderMode">The render mode.</param>
+        public virtual void Render(OpenGL gl, RenderMode renderMode)
+        {
+            //  If we're frozen, use the helper.
+            if (freezableHelper.IsFrozen)
+            {
+                freezableHelper.Render(gl);
+                return;
+            }
+
+            //  Go through each face.
+            foreach (Face face in faces)
+            {
+                //  If the face has its own material, push it.
+                if (face.Material != null)
+                    face.Material.Push(gl);
+
+                gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, PolygonMode);
+
+                if (EnableCullFace)
+                {
+                    // Pages can only be viewed from certain angles.
+                    switch (CullFace)
+                    {
+                        case FrontBack.FRONT_AND_BACK:
+                            gl.CullFace(OpenGL.GL_FRONT_AND_BACK);
+                            break;
+                        case FrontBack.FRONT:
+                            gl.CullFace(OpenGL.GL_FRONT);
+                            break;
+                        case FrontBack.BACK:
+                            gl.CullFace(OpenGL.GL_BACK);
+                            break;
+                    }
+                    gl.Enable(OpenGL.GL_CULL_FACE);
+                }
+                else
+                {
+                    gl.Disable(OpenGL.GL_CULL_FACE);
+                }
+
+                // Is front face defined per clock wise or against.
+                switch (Way)
+                {
+                    case Way.CW:
+                        gl.FrontFace(OpenGL.GL_CW);
+                        break;
+                    case Way.CCW:
+                        gl.FrontFace(OpenGL.GL_CCW);
+                        break;
+                }
+
+                switch (DepthFunc)
+                {
+                    case DepthFunc.EQUAL:
+                        gl.DepthFunc(OpenGL.GL_EQUAL);
+                        break;
+                    case DepthFunc.ALAYS:
+                        gl.DepthFunc(OpenGL.GL_ALWAYS);
+                        break;
+                    default:
+                        gl.DepthFunc(OpenGL.GL_LESS);
+                        break;
+                        // switch not comleted!
+                }
+
+
+                if (PolygonMode == OpenGL.GL_LINE)
+                {
+                    gl.LineWidth(0.9f);
+                }
+
+                if (PolygonOffset < 0 || PolygonOffset > 0)
+                {
+                    gl.Enable(OpenGL.GL_POLYGON_OFFSET_LINE);
+                    gl.PolygonOffset(PolygonOffset, PolygonOffset);
+                }
+                else
+                {
+                    gl.Disable(OpenGL.GL_POLYGON_OFFSET_LINE);
+                }
+
+                if (PolygonOffsetFill)
+                {
+                    gl.Enable(OpenGL.GL_POLYGON_OFFSET_FILL);
+                    gl.PolygonOffset(-1f, -1f);
+                }
+                else
+                {
+                    gl.Disable(OpenGL.GL_POLYGON_OFFSET_FILL);
+                }
+
+
+
+                //Begin drawing a polygon.
+                if (face.Indices.Count == 2)
+                    gl.Begin(OpenGL.GL_LINES);
+                else
+                    gl.Begin(OpenGL.GL_POLYGON);
+
+                foreach (Index index in face.Indices)
+                {
+                    //	Set a texture coord (if any).
+                    if (index.UV != -1)
+                        gl.TexCoord(uvs[index.UV]);
+
+                    //	Set a normal, or generate one.
+                    renderNormal(gl, face, index);
+
+                    //	Set the vertex.
+                    gl.Vertex(vertices[index.Vertex]);
+                }
+
+                gl.End();
+
+                //  If the face has its own material, pop it.
+                if (face.Material != null)
+                    face.Material.Pop(gl);
+            }
+
+            //	Draw normals if we have to.
+            if (drawNormals)
+            {
+                //	Set the colour to red.
+                gl.PushAttrib(OpenGL.GL_ALL_ATTRIB_BITS);
+                gl.Color(1, 0, 0, 1);
+                gl.Disable(OpenGL.GL_LIGHTING);
+
+                //	Go through each face.
+                foreach (Face face in faces)
+                {
+                    //	Go though each index.
+                    foreach (Index index in face.Indices)
+                    {
+                        //	Make sure it's got a normal, and a vertex.
+                        if (index.Normal != -1 && index.Vertex != -1)
+                        {
+                            //	Get the vertex.
+                            Vertex vertex = vertices[index.Vertex];
+
+                            //	Get the normal vertex.
+                            Vertex normal = normals[index.Normal];
+                            Vertex vertex2 = vertex + normal;
+
+                            gl.Begin(OpenGL.GL_LINES);
+                            gl.Vertex(vertex);
+                            gl.Vertex(vertex2);
+                            gl.End();
+                        }
+                    }
+                }
+
+                //	Restore the attributes.
+                gl.PopAttrib();
+            }
+        }
         /// <summary>
         /// This function is cool, just stick in a set of points, it'll add them to the
         /// array, and create a face. It will take account of duplicate vertices too!
@@ -111,106 +299,6 @@ namespace SharpGL.SceneGraph.Primitives
             faces.Clear();
             faces = newFaces;
         }
-
-        /// <summary>
-        /// Render to the provided instance of OpenGL.
-        /// </summary>
-        /// <param name="gl">The OpenGL instance.</param>
-        /// <param name="renderMode">The render mode.</param>
-        public virtual void Render(OpenGL gl, RenderMode renderMode)
-        {
-            //  If we're frozen, use the helper.
-            if (freezableHelper.IsFrozen)
-            {
-                freezableHelper.Render(gl);
-                return;
-            }
-
-            //  Go through each face.
-            foreach (Face face in faces)
-            {
-                //  If the face has its own material, push it.
-                if (face.Material != null)
-                    face.Material.Push(gl);
-
-                gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, PolygonMode);
-
-                if (PolygonMode == OpenGL.GL_LINE)
-                {
-                    gl.LineWidth(0.9f);
-                }
-
-                if (PolygonOffset)
-                {
-                    gl.Enable(OpenGL.GL_POLYGON_OFFSET_LINE);
-                    gl.PolygonOffset(-1, -1);
-                }
-
-
-                //Begin drawing a polygon.
-                if (face.Indices.Count == 2)
-                    gl.Begin(OpenGL.GL_LINES);
-                else
-                    gl.Begin(OpenGL.GL_POLYGON);
-
-                foreach (Index index in face.Indices)
-                {
-                    //	Set a texture coord (if any).
-                    if (index.UV != -1)
-                        gl.TexCoord(uvs[index.UV]);
-
-                    //	Set a normal, or generate one.
-                    renderNormal(gl, face, index);
-
-                    //	Set the vertex.
-                    gl.Vertex(vertices[index.Vertex]);
-                }
-
-                gl.End();
-
-                //  If the face has its own material, pop it.
-                if (face.Material != null)
-                    face.Material.Pop(gl);
-            }
-
-            //	Draw normals if we have to.
-            if (drawNormals)
-            {
-                //	Set the colour to red.
-                gl.PushAttrib(OpenGL.GL_ALL_ATTRIB_BITS);
-                gl.Color(1, 0, 0, 1);
-                gl.Disable(OpenGL.GL_LIGHTING);
-
-                //	Go through each face.
-                foreach (Face face in faces)
-                {
-                    //	Go though each index.
-                    foreach (Index index in face.Indices)
-                    {
-                        //	Make sure it's got a normal, and a vertex.
-                        if (index.Normal != -1 && index.Vertex != -1)
-                        {
-                            //	Get the vertex.
-                            Vertex vertex = vertices[index.Vertex];
-
-                            //	Get the normal vertex.
-                            Vertex normal = normals[index.Normal];
-                            Vertex vertex2 = vertex + normal;
-
-                            gl.Begin(OpenGL.GL_LINES);
-                            gl.Vertex(vertex);
-                            gl.Vertex(vertex2);
-                            gl.End();
-                        }
-                    }
-                }
-
-                //	Restore the attributes.
-                gl.PopAttrib();
-            }
-        }
-
-
 
         private void renderNormal(OpenGL gl, Face face, Index index)
         {
@@ -762,8 +850,5 @@ namespace SharpGL.SceneGraph.Primitives
             get;
             set;
         }
-
-        public uint PolygonMode = OpenGL.GL_FILL;       // OpenGL.GL_FILL or OpenGL.GL_LINE
-        public bool PolygonOffset = true;              // true: draw lines on area, false: no glPolygonOffset(..)
     }
 }

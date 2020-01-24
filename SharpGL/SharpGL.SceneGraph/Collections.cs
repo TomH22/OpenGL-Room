@@ -27,5 +27,5 @@ namespace SharpGL.SceneGraph
                 return -1;
             }
         }
-	}
+    }
 }

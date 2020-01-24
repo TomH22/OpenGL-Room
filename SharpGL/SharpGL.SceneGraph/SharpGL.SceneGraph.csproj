@@ -94,7 +94,6 @@
     <Compile Include="Assets\Asset.cs" />
     <Compile Include="Assets\Material.cs" />
     <Compile Include="Assets\Texture.cs" />
-    <Compile Include="Cameras\ArcBallCamera.cs" />
     <Compile Include="Cameras\Camera.cs" />
     <Compile Include="Cameras\FrustumCamera.cs" />
     <Compile Include="Cameras\LookAtCamera.cs" />

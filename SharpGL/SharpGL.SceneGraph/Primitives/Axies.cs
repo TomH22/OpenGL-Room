@@ -10,6 +10,10 @@ namespace SharpGL.SceneGraph.Primitives
     /// <summary>
     /// The axies objects are design time rendered primitives
     /// that show an RGB axies at the origin of the scene.
+    /// 
+    /// X - Red
+    /// Y - Green
+    /// Z - Blue
     /// </summary>
     public class Axies : SceneElement, IRenderable
     {
@@ -46,24 +50,24 @@ namespace SharpGL.SceneGraph.Primitives
         /// </summary>
         private void CreateDisplayList(OpenGL gl)
         {
-            //  Create the display list. 
+            // Create the display list. 
             displayList = new DisplayList();
 
-            //  Generate the display list and 
+            // Generate the display list and 
             displayList.Generate(gl);
             displayList.New(gl, DisplayList.DisplayListMode.CompileAndExecute);
 
-            //  Push all attributes, disable lighting and depth testing.
+            // Push all attributes, disable lighting and depth testing.
             gl.PushAttrib(OpenGL.GL_CURRENT_BIT | OpenGL.GL_ENABLE_BIT |
                 OpenGL.GL_LINE_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
             gl.Disable(OpenGL.GL_LIGHTING);
             gl.Disable(OpenGL.GL_TEXTURE_2D);
             gl.DepthFunc(OpenGL.GL_ALWAYS);
 
-            //  Set a nice fat line width.
+            // Set a nice fat line width.
             gl.LineWidth(1.50f);
 
-            //  Draw the axies.
+            // Draw the axies.
             gl.Begin(OpenGL.GL_LINES);
             gl.Color(1f, 0f, 0f, 1f);
             gl.Vertex(0, 0, 0);
@@ -76,10 +80,10 @@ namespace SharpGL.SceneGraph.Primitives
             gl.Vertex(0, 0, 200);
             gl.End();
 
-            //  Restore attributes.
+            // Restore attributes.
             gl.PopAttrib();
 
-            //  End the display list.
+            // End the display list.
             displayList.End(gl);
         }
 

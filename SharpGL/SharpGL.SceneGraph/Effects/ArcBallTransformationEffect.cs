@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +8,7 @@ using SharpGL.SceneGraph.Core;
 
 namespace SharpGL.SceneGraph.Effects
 {
+    public enum ViewMode { NO, NW, SO, SW, VO, SX, SY }
 
     /// <summary>
     /// An ArcBall is an effect that pushes an arcball transformation 
@@ -16,6 +16,11 @@ namespace SharpGL.SceneGraph.Effects
     /// </summary>
     public class ArcBallEffect : Effect
     {
+        public ArcBallEffect(Cameras.LookAtCamera camera)
+        {
+            arcBall = new ArcBall(camera);
+        }
+
         /// <summary>
         /// Pushes the effect onto the specified parent element.
         /// </summary>
@@ -44,7 +49,7 @@ namespace SharpGL.SceneGraph.Effects
         /// <summary>
         /// The arcball.
         /// </summary>
-        private ArcBall arcBall = new ArcBall();
+        private ArcBall arcBall;
 
         /// <summary>
         /// Gets or sets the linear transformation.
@@ -57,6 +62,12 @@ namespace SharpGL.SceneGraph.Effects
         {
             get { return arcBall; }
             set { arcBall = value; }
+        }
+
+        public void SetViewMode(ViewMode viewMode)
+        {
+            if (arcBall != null)
+                arcBall.SetViewMode(viewMode);
         }
     }
 }

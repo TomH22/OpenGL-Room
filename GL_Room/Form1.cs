@@ -1,23 +1,4 @@
-﻿// MIT License
-// Copyright (c) 2018 OpenGL Room Pty Ltd
-
-// Permission is hereby granted, free of charge, to any person obtaining a copy of this software 
-// and associated documentation files (the "Software"), to deal in the Software without restriction, 
-// including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, 
-// and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, 
-// subject to the following conditions:
-
-// The above copyright notice and this permission notice shall be included in all copies or substantial 
-// portions of the Software.
-
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT 
-// LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-// IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, 
-// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE 
-// SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -40,29 +21,133 @@ namespace GL_Room
 {
     public partial class Form1 : Form
     {
-        private ArcBallEffect arcBallEffect = new ArcBallEffect();
+        private ArcBallEffect arcBallEffect;
 
         public Form1()
         {
             InitializeComponent();
 
-            // ==== Arc ball effect ====
-            sceneControl1.MouseDown += new MouseEventHandler(FormSceneSample_MouseDown);
-            sceneControl1.MouseMove += new MouseEventHandler(FormSceneSample_MouseMove);
-            sceneControl1.MouseUp += new MouseEventHandler(sceneControl1_MouseUp);
-            sceneControl1.MouseWheel += FormSceneSample_MouseWheel;
-
-            SceneContainer sceneContainer = new SceneContainer();
+            SceneContainer sceneContainer = new SceneContainer();// paint container
             addRoomObjects(sceneContainer);
+            //createCube(sceneContainer);
 
-            sceneContainer.AddChild(new Axies());
+            sceneContainer.AddChild(new Axies());// paints the x,y and z axis
+            arcBallEffect = new ArcBallEffect(sceneControl1.Scene.CurrentCamera as LookAtCamera);// implements rotation per mouse move
             sceneContainer.AddEffect(arcBallEffect);
             sceneControl1.Scene.SceneContainer.AddChild(sceneContainer);
+            arcBallEffect.SetViewMode(ViewMode.NO);// look diagonaly on the object
 
             // Hide bounding box
             toolStripButtonShowBoundingVolumes_Click(this, new EventArgs());
         }
 
+        private void createCube(SceneContainer sceneContainer)
+        {
+            // ==== 1. Polygon ====
+            Vertex[] vertex = new Vertex[4] {
+            new Vertex(0f, 0, 0f),
+            new Vertex(1000f, 0f, 0f),
+            new Vertex(1000f, 0f, 1000f),
+            new Vertex(0f, 0f, 1000f)};
+            Polygon polyFill, polyBorder;
+            createPolygon(vertex, out polyFill, out polyBorder, Materials.Pink(sceneControl1.OpenGL));
+            //polyFill.Way = Way.CCW;
+            //polyBorder.Way = Way.CCW;
+            sceneContainer.AddChild(polyFill);
+            sceneContainer.AddChild(polyBorder);
+
+
+            // ==== 2. Polygon ====
+            vertex = new Vertex[4] {
+            new Vertex(0f, 0, 0f),
+            new Vertex(0f, 1000f, 0f),
+            new Vertex(0f, 1000f, 1000f),
+            new Vertex(0f, 0f, 1000f)};
+            polyFill = new Polygon();
+            polyBorder = new Polygon();
+            createPolygon(vertex, out polyFill, out polyBorder, Materials.Red(sceneControl1.OpenGL));
+            polyFill.Way = Way.CW;
+            polyBorder.Way = Way.CW;
+            sceneContainer.AddChild(polyFill);
+            sceneContainer.AddChild(polyBorder);
+
+            // ==== 3. Polygon ====
+            vertex = new Vertex[4] {
+            new Vertex(0f, 1000f, 0f),
+            new Vertex(1000f, 1000f, 0f),
+            new Vertex(1000f, 1000f, 1000f),
+            new Vertex(0f, 1000f, 1000f)};
+            polyFill = new Polygon();
+            polyBorder = new Polygon();
+            createPolygon(vertex, out polyFill, out polyBorder, Materials.Blue(sceneControl1.OpenGL));
+            polyFill.Way = Way.CW;
+            polyBorder.Way = Way.CW;
+            sceneContainer.AddChild(polyFill);
+            sceneContainer.AddChild(polyBorder);
+
+            // ==== 4. Polygon ====
+            vertex = new Vertex[4] {
+            new Vertex(1000f, 0, 0f),
+            new Vertex(1000f, 0f, 1000f),
+            new Vertex(1000f, 1000f, 1000f),
+            new Vertex(1000f, 1000f, 0f)};
+            polyFill = new Polygon();
+            polyBorder = new Polygon();
+            createPolygon(vertex, out polyFill, out polyBorder, Materials.LightBlue(sceneControl1.OpenGL));
+            polyFill.Way = Way.CW;
+            polyBorder.Way = Way.CW;
+            sceneContainer.AddChild(polyFill);
+            sceneContainer.AddChild(polyBorder);
+
+            // ==== 5. Polygon ====
+            vertex = new Vertex[4] {
+            new Vertex(0f, 0, 1000f),
+            new Vertex(1000f, 0f, 1000f),
+            new Vertex(1000f, 1000f, 1000f),
+            new Vertex(0f, 1000f, 1000f)};
+            polyFill = new Polygon();
+            polyBorder = new Polygon();
+            createPolygon(vertex, out polyFill, out polyBorder, Materials.Green(sceneControl1.OpenGL));
+            //polyFill.Way = Way.CCW;
+            //polyBorder.Way = Way.CCW;
+            sceneContainer.AddChild(polyFill);
+            sceneContainer.AddChild(polyBorder);
+
+            // ==== 6. Polygon ====
+            vertex = new Vertex[4] {
+            new Vertex(0f, 0, 0f),
+            new Vertex(1000f, 0f, 0f),
+            new Vertex(1000f, 1000f, 0f),
+            new Vertex(0f, 1000f, 0f)};
+            polyFill = new Polygon();
+            polyBorder = new Polygon();
+            createPolygon(vertex, out polyFill, out polyBorder, Materials.Yellow(sceneControl1.OpenGL));
+            polyFill.Way = Way.CW;
+            polyBorder.Way = Way.CW;
+            sceneContainer.AddChild(polyFill);
+            sceneContainer.AddChild(polyBorder);
+        }
+
+        private void createPolygon(Vertex[] vertex2, out Polygon polyFill2, out Polygon polyBorder2, Material material)
+        {
+            polyFill2 = new Polygon(this.Name);
+            polyFill2.Material = material;
+            polyFill2.PolygonMode = OpenGL.GL_FILL;
+            polyFill2.PolygonOffset = 0f;
+            polyFill2.AddFaceFromVertexData(vertex2);
+            polyFill2.CullFace = FrontBack.FRONT;
+
+            polyBorder2 = new Polygon(this.Name);
+            polyBorder2.Material = Materials.DarkGrey(sceneControl1.OpenGL);
+            polyBorder2.PolygonMode = OpenGL.GL_LINE;
+            polyBorder2.PolygonOffset = -1f;
+            polyBorder2.AddFaceFromVertexData(vertex2);
+            polyBorder2.CullFace = FrontBack.FRONT;
+        }
+
+        /// <summary>
+        /// Creates the room.
+        /// </summary>
         private void addRoomObjects(SceneContainer sceneContainer)
         {
             // ===============
@@ -110,62 +195,89 @@ namespace GL_Room
             new Vertex(583.469141284528f, 1051.34483191662f, -1090.10747004971f)};
             SharpGL.SceneGraph.Quadrics.Wall wall09 = new Wall(vertex9, "Wall 9", sceneControl1.OpenGL);
 
-            Vertex[] vertex11 = new Vertex[8] {
-            new Vertex(583.469141284539f, 1051.34483191769f, -1090.10747004971f),
-            new Vertex(1227.28747450289f, 1039.28738284216f, -1090.10747004971f),
+            Vertex[] vertex10 = new Vertex[4] {
+                new Vertex(1185.71341296406f, -811.267853802761f, 1333.73756501464f),
+                new Vertex(1185.71341296406f, -811.267853802761f, -1090.10747004971f),
+                new Vertex(-1233.89549066894f, -756.208094725554f, -1090.10747004971f),
+            new Vertex(-1233.89549066894f, -756.208094725552f, 1333.73756501464f)
+            };
+            SharpGL.SceneGraph.Quadrics.Wall wall10 = new Wall(vertex10, "Wall 10", sceneControl1.OpenGL);
+
+            Vertex[] vertex11 = new Vertex[4] {
             new Vertex(1185.71341296406f, -811.267853802761f, -1090.10747004971f),
-            new Vertex(-1233.89549066894f, -756.208094725533f, -1090.10747004971f),
-            new Vertex(-1193.92231770494f, 1095.2965750271f, -1090.10747004971f),
-            new Vertex(-543.564905413165f, 1080.00527771926f, -1090.10747004971f),
-            new Vertex(-542.588207408784f, 1189.1435831438f, -1090.10747004971f),
-            new Vertex(587.18690454007f, 1409.48492346394f, -1090.10747004971f)};
-            SharpGL.SceneGraph.Quadrics.Wall bottom01 = new Wall(vertex11, "Bottom 1", sceneControl1.OpenGL);
+            new Vertex(1185.71341296406f, -811.267853802761f, 1333.73756501464f),
+            new Vertex(1227.28747450311f, 1039.2873828411f, 1333.73756501464f),
+            new Vertex(1227.2874745031f, 1039.2873828411f, -1090.10747004971f)};
+            SharpGL.SceneGraph.Quadrics.Wall wall11 = new Wall(vertex11, "Wall 11", sceneControl1.OpenGL);
+
+            Vertex[] vertex12 = new Vertex[8] {
+                new Vertex(587.18690454007f, 1409.48492346394f, -1090.10747004971f),
+                new Vertex(-542.588207408784f, 1189.1435831438f, -1090.10747004971f),
+                new Vertex(-543.564905413165f, 1080.00527771926f, -1090.10747004971f),
+                new Vertex(-1193.92231770494f, 1095.2965750271f, -1090.10747004971f),
+                new Vertex(-1233.89549066894f, -756.208094725533f, -1090.10747004971f),
+                new Vertex(1185.71341296406f, -811.267853802761f, -1090.10747004971f),
+                new Vertex(1227.28747450289f, 1039.28738284216f, -1090.10747004971f),
+            new Vertex(583.469141284539f, 1051.34483191769f, -1090.10747004971f)
+            };
+            SharpGL.SceneGraph.Quadrics.Wall bottom01 = new Wall(vertex12, "Bottom 1", sceneControl1.OpenGL);
+
+            Vertex[] vertex13 = new Vertex[8] {
+            new Vertex(583.469141284539f, 1051.34483191769f, 1333.73756501464f),
+            new Vertex(1227.28747450289f, 1039.28738284216f, 1333.73756501464f),
+            new Vertex(1185.71341296406f, -811.267853802761f, 1333.73756501464f),
+            new Vertex(-1233.89549066894f, -756.208094725533f, 1333.73756501464f),
+            new Vertex(-1193.92231770494f, 1095.2965750271f, 1333.73756501464f),
+            new Vertex(-543.564905413165f, 1080.00527771926f, 1333.73756501464f),
+            new Vertex(-542.588207408784f, 1189.1435831438f, 1333.73756501464f),
+            new Vertex(587.18690454007f, 1409.48492346394f, 1333.73756501464f)};
+            SharpGL.SceneGraph.Quadrics.Wall top01 = new Wall(vertex13, "Top 1", sceneControl1.OpenGL);
 
             // ======================
             // ==== Wall objects ====
             // ======================
             WallObject window = new WallObject("Window 1");
             // On Wall
-            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1206.38f, 518.49f, -387.11f), new Vertex(-1222.43f, -225.33f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
+            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1206.38f, 518.49f, -387.11f), new Vertex(-1222.43f, -225.33f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL), -4);
             // Not on Wall
-            window.AddPoly(new Vertex[4] { new Vertex(-1322.41f, -223.17f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1306.35f, 520.65f, -387.11f), new Vertex(-1322.41f, -223.17f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
+            window.AddPoly(new Vertex[4] { new Vertex(-1322.41f, -223.17f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1306.35f, 520.65f, -387.11f), new Vertex(-1322.41f, -223.17f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL),-1);
             // Bottom
-            window.AddPoly(new Vertex[4] { new Vertex(-1322.41f, -223.17f, -387.11f), new Vertex(-1222.43f, -225.33f, -387.11f), new Vertex(-1206.38f, 518.49f, -387.11f), new Vertex(-1306.35f, 520.65f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
+            window.AddPoly(new Vertex[4] { new Vertex(-1322.41f, -223.17f, -387.11f), new Vertex(-1222.43f, -225.33f, -387.11f), new Vertex(-1206.38f, 518.49f, -387.11f), new Vertex(-1306.35f, 520.65f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL), -1);
             // Top
-            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1322.41f, -223.17f, 580.89f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
+            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1322.41f, -223.17f, 580.89f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL),-1);
             // Left
-            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, -387.11f), new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1322.41f, -223.17f, 580.89f), new Vertex(-1322.41f, -223.17f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
+            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, -387.11f), new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1322.41f, -223.17f, 580.89f), new Vertex(-1322.41f, -223.17f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL), -1);
             // Right
-            window.AddPoly(new Vertex[4] { new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1306.35f, 520.65f, -387.11f), new Vertex(-1206.38f, 518.49f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
+            window.AddPoly(new Vertex[4] { new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1306.35f, 520.65f, -387.11f), new Vertex(-1206.38f, 518.49f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL), -1);
 
             WallObject door = new WallObject("Door 1");
             // On Wall
-            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(341.75f, 1361.62f, -1090.11f), new Vertex(-466.03f, 1204.07f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
+            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(341.75f, 1361.62f, -1090.11f), new Vertex(-466.03f, 1204.07f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL),-4);
             // Not on Wall
-            door.AddPoly(new Vertex[4] { new Vertex(-485.17f, 1302.23f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(-485.17f, 1302.23f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
+            door.AddPoly(new Vertex[4] { new Vertex(-485.17f, 1302.23f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(-485.17f, 1302.23f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
             // Bottom
-            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, -1090.11f), new Vertex(341.75f, 1361.62f, -1090.11f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(-485.17f, 1302.23f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
+            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, -1090.11f), new Vertex(341.75f, 1361.62f, -1090.11f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(-485.17f, 1302.23f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
             // Top
-            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(-485.17f, 1302.23f, 959.89f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
+            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(-485.17f, 1302.23f, 959.89f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
             // Left
-            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(-485.17f, 1302.23f, 959.89f), new Vertex(-485.17f, 1302.23f, -1090.11f), new Vertex(-466.03f, 1204.07f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
+            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(-485.17f, 1302.23f, 959.89f), new Vertex(-485.17f, 1302.23f, -1090.11f), new Vertex(-466.03f, 1204.07f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
             // Right
-            door.AddPoly(new Vertex[4] { new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(341.75f, 1361.62f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
+            door.AddPoly(new Vertex[4] { new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(341.75f, 1361.62f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
 
 
             WallObject electricalOutlet = new WallObject("Electrical outlet 160x80 1");
             // On Wall
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1225.11f, -349.31f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1225.11f, -349.31f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1225.11f, -349.31f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1225.11f, -349.31f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL),-4);
             // Not on Wall
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
             // Bottom
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1063.51f), new Vertex(-1225.11f, -349.31f, 1063.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1208.24f, -123.62f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1063.51f), new Vertex(-1225.11f, -349.31f, 1063.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1208.24f, -123.62f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
             // Top
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1225.11f, -349.31f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1143.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1225.11f, -349.31f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1143.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
             // Left
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1225.11f, -349.31f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1225.11f, -349.31f, 1143.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1225.11f, -349.31f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1225.11f, -349.31f, 1143.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
             // Right
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1208.24f, -123.62f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1208.24f, -123.62f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1208.24f, -123.62f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1208.24f, -123.62f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
 
             addElectricalOutletSymbol(electricalOutlet);
 
@@ -175,7 +287,10 @@ namespace GL_Room
             sceneContainer.AddChild(wall07);
             sceneContainer.AddChild(wall08);
             sceneContainer.AddChild(wall09);
+            sceneContainer.AddChild(wall10);
+            sceneContainer.AddChild(wall11);
             sceneContainer.AddChild(bottom01);
+            sceneContainer.AddChild(top01);
 
             sceneContainer.AddChild(window);
             sceneContainer.AddChild(door);
@@ -384,13 +499,11 @@ namespace GL_Room
 
         void FormSceneSample_MouseDown(object sender, MouseEventArgs e)
         {
-            arcBallEffect.ArcBall.SetBounds(sceneControl1.Width, sceneControl1.Height);
             arcBallEffect.ArcBall.MouseDown(e.X, e.Y);
         }
 
         private void FormSceneSample_MouseWheel(object sender, MouseEventArgs e)
         {
-            //arcBallEffect.ArcBall.SetBounds(sceneControl1.Width, sceneControl1.Height);
             arcBallEffect.ArcBall.MouseWheel(e.Delta);
         }
 
@@ -450,7 +563,7 @@ namespace GL_Room
                 // listBox1_SelectedIndexChanged(this, null);
             }
 
-            sceneControl1.Scene.AddPoint(e.X, e.Y);
+            //sceneControl1.Scene.AddPoint(e.X, e.Y);
         }
 
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)

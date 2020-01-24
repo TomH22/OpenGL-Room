@@ -31,20 +31,23 @@ namespace SharpGL.SceneGraph.Quadrics
             Name = name;
         }
 
-        public void AddPoly(Vertex[] vertex1, OpenGL gl, Material material)
+        public void AddPoly(Vertex[] vertex1, OpenGL gl, Material material, float polygonOffset)
         {
             SharpGL.SceneGraph.Primitives.Polygon polyFill = new Polygon(this.Name);
             polyFill.Material = material;
             polyFill.PolygonMode = OpenGL.GL_FILL;
-            polyFill.PolygonOffset = false;
+            polyFill.PolygonOffset = 0f;
+            polyFill.PolygonOffsetFill = true;
             polyFill.AddFaceFromVertexData(vertex1);
+            //polyFill.DepthFunc = DepthFunc.ALAYS;
             this.Children.Add(polyFill);
 
             SharpGL.SceneGraph.Primitives.Polygon polyBorder = new Polygon(this.Name);
             polyBorder.Material = Materials.DarkGrey(gl);
             polyBorder.PolygonMode = OpenGL.GL_LINE;
-            polyBorder.PolygonOffset = true;
+            polyBorder.PolygonOffset = polygonOffset;
             polyBorder.AddFaceFromVertexData(vertex1);
+            //polyBorder.DepthFunc = DepthFunc.ALAYS;
             this.Children.Add(polyBorder);
 
             this.polyOnWall = polyFill;
@@ -55,7 +58,7 @@ namespace SharpGL.SceneGraph.Quadrics
             SharpGL.SceneGraph.Primitives.Polygon polyBorder = new Polygon(this.Name);
             polyBorder.Material = Materials.DarkGrey(gl);
             polyBorder.PolygonMode = OpenGL.GL_LINE;
-            polyBorder.PolygonOffset = true;
+            polyBorder.PolygonOffset = -6f;
             polyBorder.AddFaceFromVertexData(vertex1);
             this.Children.Add(polyBorder);
         }

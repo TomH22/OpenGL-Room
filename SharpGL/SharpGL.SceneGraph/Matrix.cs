@@ -23,32 +23,38 @@ namespace SharpGL.SceneGraph
     class MatrixNullException : ApplicationException
     {
         public MatrixNullException() :
-            base("To do this operation, matrix can not be null") { }
+            base("To do this operation, matrix can not be null")
+        { }
     }
     class MatrixDimensionException : ApplicationException
     {
         public MatrixDimensionException() :
-            base("Dimension of the two matrices not suitable for this operation !") { }
+            base("Dimension of the two matrices not suitable for this operation !")
+        { }
     }
     class MatrixNotSquare : ApplicationException
     {
         public MatrixNotSquare() :
-            base("To do this operation, matrix must be a square matrix !") { }
+            base("To do this operation, matrix must be a square matrix !")
+        { }
     }
     class MatrixDeterminentZero : ApplicationException
     {
         public MatrixDeterminentZero() :
-            base("Determinent of matrix equals zero, inverse can't be found !") { }
+            base("Determinent of matrix equals zero, inverse can't be found !")
+        { }
     }
     class VectorDimensionException : ApplicationException
     {
         public VectorDimensionException() :
-            base("Dimension of matrix must be [3 , 1] to do this operation !") { }
+            base("Dimension of matrix must be [3 , 1] to do this operation !")
+        { }
     }
     class MatrixSingularException : ApplicationException
     {
         public MatrixSingularException() :
-            base("Matrix is singular this operation cannot continue !") { }
+            base("Matrix is singular this operation cannot continue !")
+        { }
     }
     #endregion
 
@@ -219,12 +225,12 @@ namespace SharpGL.SceneGraph
             get
             {
                 //  Storage for the array.
-                List<double> ar = new List<double>();    
-                
+                List<double> ar = new List<double>();
+
                 //  Create the array.
                 for (int i = 0; i < Rows; i++)
                     for (int j = 0; j < Columns; j++)
-                        ar.Add(this[i,j]);
+                        ar.Add(this[i, j]);
 
                 //  Return the array.
                 return ar.ToArray();
@@ -297,13 +303,13 @@ namespace SharpGL.SceneGraph
 
         public float TempSVD()
         {
-        // this is a simple svd.
-        // Not complete but fast and reasonable.
-        // See comment in Matrix3d.
+            // this is a simple svd.
+            // Not complete but fast and reasonable.
+            // See comment in Matrix3d.
             return (float)Math.Sqrt(
-                (float)((this[0,0] * this[0,0]) + (this[0,1] * this[0,1]) + (this[0,2] * this[0,2]) + 
-                (this[1,0] * this[1,0]) + (this[1,1] * this[1,1]) + (this[1,2] * this[1,2]) +
-                (this[2,0] * this[2,0]) + (this[2,1] * this[2,1]) + (this[2,2] * this[2,2]) ) / 3.0f );                
+                (float)((this[0, 0] * this[0, 0]) + (this[0, 1] * this[0, 1]) + (this[0, 2] * this[0, 2]) +
+                (this[1, 0] * this[1, 0]) + (this[1, 1] * this[1, 1]) + (this[1, 2] * this[1, 2]) +
+                (this[2, 0] * this[2, 0]) + (this[2, 1] * this[2, 1]) + (this[2, 2] * this[2, 2])) / 3.0f);
         }
 
         public void Multiply(float value, int rows, int cols)
@@ -420,7 +426,7 @@ namespace SharpGL.SceneGraph
             //  Set the identity.
             for (int i = 0; i < Rows; i++)
                 for (int j = 0; j < Columns; j++)
-                    this[i, j] = i==j? 1 : 0;
+                    this[i, j] = i == j ? 1 : 0;
         }
 
         /// <summary>
@@ -2154,26 +2160,6 @@ namespace SharpGL.SceneGraph
         { return IsEqual(Mat1.in_Mat, Mat2.in_Mat); }
 
         /// <summary>
-        /// Checks if two matrices of equal dimensions are equal or not.
-        /// In case of an error the error is raised as an exception.
-        /// </summary>
-        /// <param name="Mat1">First Matrix object in equality check</param>
-        /// <param name="Mat2">Second Matrix object in equality check</param>
-        /// <returns>If two matrices are equal or not</returns>
-        public static bool operator ==(Matrix Mat1, Matrix Mat2)
-        { return IsEqual(Mat1.in_Mat, Mat2.in_Mat); }
-
-        /// <summary>
-        /// Checks if two matrices of equal dimensions are not equal.
-        /// In case of an error the error is raised as an exception.
-        /// </summary>
-        /// <param name="Mat1">First Matrix object in equality check</param>
-        /// <param name="Mat2">Second Matrix object in equality check</param>
-        /// <returns>If two matrices are not equal</returns>
-        public static bool operator !=(Matrix Mat1, Matrix Mat2)
-        { return (!IsEqual(Mat1.in_Mat, Mat2.in_Mat)); }
-
-        /// <summary>
         /// Tests whether the specified object is a MatrixLibrary.Matrix
         /// object and is identical to this MatrixLibrary.Matrix object.
         /// </summary>
@@ -2181,7 +2167,7 @@ namespace SharpGL.SceneGraph
         /// <returns>This method returns true if obj is the specified Matrix object identical to this Matrix object; otherwise, false.</returns>
         public override bool Equals(Object obj)
         {
-            try { return (bool)(this == (Matrix)obj); }
+            try { return (bool)(IsEqual(this, (Matrix)obj)); }
             catch { return false; }
         }
         #endregion
@@ -2287,5 +2273,58 @@ namespace SharpGL.SceneGraph
         { return (PrintMat(this.in_Mat)); }
 
         #endregion
+
+        /// <summary>
+        /// Creates a matrix that rotates around the given angle around the z-axis.
+        /// </summary>
+        public static Matrix GetRotate_Z_Matrix(double angle)
+        {
+            double c = Math.Cos(angle);
+            double s = Math.Sin(angle);
+
+            Matrix m = new Matrix(4, 4);
+            m.SetIdentity();
+
+            m[0, 0] = c;
+            m[0, 1] = -s;
+            m[1, 0] = s;
+            m[1, 1] = c;
+            return m;
+        }
+
+        /// <summary>
+        /// Creates a matrix that rotates around the given angle around any vector.
+        /// </summary>
+        public static Matrix GetRotateMatrix(Vertex vec, double angle)
+        {
+            double c = Math.Cos(angle);
+            double s = Math.Sin(angle);
+
+
+            vec.Normalize();
+
+
+            double x = vec.X;
+            double y = vec.Y;
+            double z = vec.Z;
+
+
+            Matrix m = new Matrix(4, 4);
+            m.SetIdentity();
+
+            m[0, 0] = c + x * x * (1 - c);
+            m[0, 1] = x * y * (1 - c) - z * s;
+            m[0, 2] = x * z * (1 - c) + y * s;
+
+            m[1, 0] = y * x * (1 - c) + z * s;
+            m[1, 1] = c + y * y * (1 - c);
+            m[1, 2] = y * z * (1 - c) - x * s;
+
+            m[2, 0] = z * x * (1 - c) - y * s;
+            m[2, 1] = z * y * (1 - c) + x * s;
+            m[2, 2] = c + z * z * (1 - c);
+
+            return m;
+        }
     }
 }

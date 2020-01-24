@@ -11,16 +11,31 @@ namespace SharpGL.SceneGraph.Core
     [Serializable()]
     public class ArcBall
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PerspectiveCamera"/> class.
-        /// </summary>
-        public ArcBall()
+        private bool mouseIsDown;
+
+        // Last position of the mouse
+        private float mouseDownX, mouseDownY;
+
+        // pivot point
+        private Vertex mouseDownPoint3D;
+
+        private Matrix transformMatrix;
+        private Matrix scaleMatrix;
+
+        private Cameras.LookAtCamera camera;
+
+        public ArcBall(Cameras.LookAtCamera camera)
         {
+            this.camera = camera;
+
+            transformMatrix = new Matrix(4, 4);
+            scaleMatrix = new Matrix(4, 4);
+
             //  Set the identity matrices.
             transformMatrix.SetIdentity();
-            lastRotationMatrix.SetIdentity();
-            thisRotationMatrix.SetIdentity();
             scaleMatrix.SetIdentity();
+
+            mouseIsDown = false;
         }
 
         /// <summary>
@@ -35,26 +50,147 @@ namespace SharpGL.SceneGraph.Core
 
         public void MouseDown(int x, int y)
         {
-            //  Map the start vertex.
-            MapToSphere((float)x, (float)y, out startVector);
+            this.mouseIsDown = true;
+
+            this.mouseDownX = x;
+            this.mouseDownY = y;
         }
 
         public void MouseMove(int x, int y)
         {
-            //  todo need solid tuple types.
-            //  Calculate the quaternion.
-            float[] quaternion = CalculateQuaternion(x, y);
+            if (!mouseIsDown)
+                return;
 
-            thisRotationMatrix = Matrix3fSetRotationFromQuat4f(quaternion);
-            thisRotationMatrix = thisRotationMatrix * lastRotationMatrix;
-            Matrix4fSetRotationFromMatrix3f(ref transformMatrix, thisRotationMatrix);          // Set Our Final Transform's Rotation From This One
+            Vertex UpVector = camera.UpVector * transformMatrix;
+            Vertex Position = new Vertex(0, 0, 1) * transformMatrix;
+            Vertex Target = camera.Target;
+
+            double horizontal = (this.mouseDownX - x) * -0.005f;
+            double vertikal = (this.mouseDownY - y) * -0.005f;
+
+            transformView(UpVector, Position, Target, horizontal, vertikal, false);
+
+            mouseDownX = x;
+            mouseDownY = y;
+        }
+
+        /// <summary>
+        /// Rotates the view.
+        /// </summary>
+        private void transformView(Vertex UpVector, Vertex Position, Vertex Target, double horizontal, double vertikal, bool forceCalc)
+        {
+            Matrix m = null;
+
+            if (forceCalc)
+            {
+                m = new Matrix(4, 4);
+                m.SetIdentity();
+            }
+
+            if (vertikal == 0)
+            {
+                if (horizontal != 0)
+                {
+                    // Rotation around the Z axis
+                    m = Matrix.GetRotate_Z_Matrix(horizontal);
+                }
+            }
+            else
+            {
+                // x direction
+                Vertex viewX = UpVector.VectorProduct(Position - Target);
+                viewX.Normalize();
+
+                if (horizontal == 0)
+                {
+                    // Rotation around the vector that points to the right in the image.
+                    m = Matrix.GetRotateMatrix(viewX, vertikal);
+                }
+                else
+                {
+                    // Combined rotation.
+                    m = Matrix.GetRotate_Z_Matrix(horizontal) * Matrix.GetRotateMatrix(viewX, vertikal);
+                }
+            }
+
+            // There was a rotation at all.
+            if (m != null)
+            {
+                Vertex lookAt = Target;         // Target
+                Vertex pos = Position - lookAt; // Position
+                Vertex upDir = UpVector;        // UpVector
+
+                Vertex posTransformed = lookAt + (pos * m);
+                Vertex upDirTransformed = upDir * m;
+
+                Vertex posTransformedNormalized = (posTransformed - lookAt);
+                posTransformedNormalized.Normalize();
+
+                Vertex upDirTransformedNormalized = upDirTransformed;
+                upDirTransformedNormalized.Normalize();
+
+                transformMatrix = LookAtRH(lookAt + posTransformedNormalized, lookAt, upDirTransformedNormalized);
+            }
         }
 
         public void MouseUp(int x, int y)
         {
-            lastRotationMatrix.FromOtherMatrix(thisRotationMatrix, 3, 3);
-            thisRotationMatrix.SetIdentity();
-            //Matrix4fSetRotationFromMatrix3f(ref transformMatrix, thisRotationMatrix);          // Set Our Final Transform's Rotation From This One
+            this.mouseIsDown = false;
+        }
+
+        /// <summary>
+        /// Gets the transformation matrix.
+        /// </summary>
+        public static Matrix LookAtRH(Vertex pos, Vertex lookat, Vertex updir)
+        {
+            Vertex zaxis = (pos - lookat); zaxis.Normalize();
+            Vertex xaxis = updir; xaxis = xaxis.VectorProduct(zaxis); xaxis.Normalize();
+            Vertex yaxis = zaxis; yaxis = yaxis.VectorProduct(xaxis);
+
+            Matrix result = new Matrix(4, 4);
+            result.SetIdentity();
+
+            result[0, 0] = xaxis.X;
+            result[0, 1] = xaxis.Y;
+            result[0, 2] = xaxis.Z;
+            result[0, 3] = -xaxis.ScalarProduct(pos);
+            result[1, 0] = yaxis.X;
+            result[1, 1] = yaxis.Y;
+            result[1, 2] = yaxis.Z;
+            result[1, 3] = -yaxis.ScalarProduct(pos);
+            result[2, 0] = zaxis.X;
+            result[2, 1] = zaxis.Y;
+            result[2, 2] = zaxis.Z;
+            result[2, 3] = -zaxis.ScalarProduct(pos);
+            result[3, 0] = 0;
+            result[3, 1] = 0;
+            result[3, 2] = 0;
+            result[3, 3] = 1.0;
+
+            return result;
+        }
+
+        public Vertex GetTransformedDirection(Vertex vertex, Matrix matrix)
+        {
+            double[] result = new double[4];
+            //temp ist der Vektor erweitert um eine wall-Komponente (wall = 0.0)
+            double[] temp = new double[4];
+            temp[0] = vertex.X;
+            temp[1] = vertex.Y;
+            temp[2] = vertex.Z;
+            temp[3] = 0d;
+
+            //Multiplikation mit der Matrix
+            for (int i = 0; i <= 3; i++)
+            {
+                result[i] = 0;
+                for (int j = 0; j <= 3; j++)
+                {
+                    result[i] += matrix[i, j] * temp[j];
+                }
+            }
+
+            return new Vertex((float)result[0], (float)result[1], (float)result[2]);
         }
 
         public void MouseWheel(int delta)
@@ -99,67 +235,32 @@ namespace SharpGL.SceneGraph.Core
             transform.Multiply(scale, 3, 3);
         }
 
-        private float[] CalculateQuaternion(int x, int y)
+        public void SetViewMode(SharpGL.SceneGraph.Effects.ViewMode viewMode)
         {
-            //  Map the current vector.
-            MapToSphere((float)x, (float)y, out currentVector);
-
-            //  Compute the cross product of the begin and end vectors.
-            Vertex cross = startVector.VectorProduct(currentVector);
-
-            //  Is the perpendicular length essentially non-zero?
-            if (cross.Magnitude() > 1.0e-5)
+            switch (viewMode)
             {
-                //  The quaternion is the transform.
-                return new float[] { cross.X, cross.Y, cross.Z, startVector.ScalarProduct(currentVector) };
-            }
-            else
-            {
-                //  Begin and end coincide, return identity.
-                return new float[] { 0, 0, 0, 0 };
+                case SharpGL.SceneGraph.Effects.ViewMode.VO:
+                    transformView(new Vertex(0, 1, 0), new Vertex(0, 0, 1), new Vertex(0, 0, 0), 0, 0, true);
+                    break;
+                case SharpGL.SceneGraph.Effects.ViewMode.SX:
+                    transformView(new Vertex(0, 0, 1), new Vertex(-1, 0, 0), new Vertex(0, 0, 0), 0, 0, true);
+                    break;
+                case SharpGL.SceneGraph.Effects.ViewMode.SY:
+                    transformView(new Vertex(0, 0, 1), new Vertex(0, -1, 0), new Vertex(0, 0, 0), 0, 0, true);
+                    break;
+                case SharpGL.SceneGraph.Effects.ViewMode.NO:
+                    transformView(new Vertex(-1, -1, 1), new Vertex(1, 1, 1), new Vertex(0, 0, 0), 0, 0, true);
+                    break;
+                case SharpGL.SceneGraph.Effects.ViewMode.NW:
+                    transformView(new Vertex(1, -1, 1), new Vertex(-1, 1, 1), new Vertex(0, 0, 0), 0, 0, true);
+                    break;
+                case SharpGL.SceneGraph.Effects.ViewMode.SO:
+                    transformView(new Vertex(-1, 1, 1), new Vertex(1, -1, 1), new Vertex(0, 0, 0), 0, 0, true);
+                    break;
+                case SharpGL.SceneGraph.Effects.ViewMode.SW:
+                    transformView(new Vertex(1, 1, 1), new Vertex(-1, -1, 1), new Vertex(0, 0, 0), 0, 0, true);
+                    break;
             }
         }
-
-        private void MapToSphere(float x, float y, out Vertex newVector)
-        {
-            float scaledX = x * adjustWidth - 1.0f;
-            float scaledY = 1.0f - y * adjustHeight;
-
-            //  Get square of length of vector to point from centre.
-            float length = scaledX * scaledX + scaledY * scaledY;
-
-            //  Are we outside the sphere?
-            if (length > 1.0f)
-            {
-                //  Get normalising factor.
-                float norm = 1.0f / (float)Math.Sqrt(length);
-
-                //  Return normalised vector, a point on the sphere.
-                newVector = new Vertex(-scaledX * norm, 0, scaledY * norm);
-            }
-            else
-            {
-                //  Return a vector to a point mapped inside the sphere.
-                newVector = new Vertex(-scaledX, (float)Math.Sqrt(1.0f - length), scaledY);
-            }
-        }
-
-        public void SetBounds(float width, float height)
-        {
-            //  Set the adjust width and height.
-            adjustWidth = 1.0f / ((width - 1.0f) * 0.5f);
-            adjustHeight = 1.0f / ((height - 1.0f) * 0.5f);
-        }
-
-        private float adjustWidth = 1.0f;
-        private float adjustHeight = 1.0f;
-        private Vertex startVector = new Vertex(0, 0, 0);
-        private Vertex currentVector = new Vertex(0, 0, 0);
-
-        Matrix transformMatrix = new Matrix(4, 4);
-        Matrix scaleMatrix = new Matrix(4, 4);
-        Matrix lastRotationMatrix = new Matrix(3, 3);
-
-        Matrix thisRotationMatrix = new Matrix(3, 3);
     }
 }
