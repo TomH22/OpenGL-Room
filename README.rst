@@ -8,7 +8,7 @@ C# room example
 **OpenGL**
 
 OpenGL is a graphics library that can be used to display geometrical models on the screen with help of the GPU. With it you can create 3D objects, determine perspectives or define and display different effects. 
-OpenGL sends commands directly to the graphics card and is not object-oriented. Here the OpenGL version 2.1 is used, because in this version approx. 200 functions are defined, with which one can work well. Version 3.X or version 4.X contain too many or too few commands. The wrapper (SharpGL) here also uses version 2.1 by default.
+OpenGL sends primitive commands directly to the graphics card. Here the OpenGL version 2.1 is used, because in this version approx. 200 functions are defined, with which one can work well. Version 3.X or version 4.X contain too many or too few commands. The wrapper (SharpGL) here also uses version 2.1 by default.
 
 The machine code of OpenGL in Windows can be found in the file opengl32.dll. Additional functions for 3D calculation are defined in the file glu32.dll. These mentioned libraries are used in SharpGL.
 
@@ -37,10 +37,9 @@ Current features:
 
 -	If you look from the outside on a wall, it becomes transparent
 
-
 **Purpose of the program**
 
-In a larger CAD System, we want to switch to OpenGL. It is a relatively small-scale project. The annual turnover is approx. 1 million euros. Customers are craftsman or real estate companies.
+In a larger CAD System, we want to switch to OpenGL. It is a relatively small-scale project. The annual turnover is under 1 million euros. Customers are craftsman or real estate companies.
 After much research activities, we decided to slowly switch to OpenGL and also use the wrapper SharpGL to accelerate the performance of our product. This GitHub project is for the initial design of the features.
 
 Followings are required:
@@ -60,10 +59,9 @@ Followings are required:
 -	Display text on objects with perspective to the camera or along the x-axis
 
 -	...
-The performance must also be optimized. This is currently not enough to smoothly display several rooms with countless objects. The performance is even under the presentation of objects only with help of the CPUs.
+The performance must also be optimized. This is currently not enough to smoothly display several rooms with countless objects. The performance is even under the presentation of objects with the help of just the CPU.
 
-In order to work on these features, it is therefore not sufficient to only implement and use the SharpGL library. This must therefore be made available here as a changeable and expandable project within the Visual Studio Workspace. How it was done here. This is the only way to refine algorithms, add complex objects or to add functions to the library.
+In order to work on these features, it is therefore not enough to only implement and use the SharpGL library as dll. This must therefore be made available here as a changeable and expandable project within the Visual Studio Workspace. How it was done here. This is the only way to refine algorithms, add complex objects or to add functions to the library.
 
 
 The priority of the project is uncertain  :rage1:
-
