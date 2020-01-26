@@ -17,7 +17,7 @@ OpenGL 2.1 Reference Page: https://www.khronos.org/registry/OpenGL-Refpages/gl2.
 
 **SharpGL**
 
-SharpGL wraps all modern OpenGL features and offers a powerful scene graph to aid development.
+SharpGL wraps all modern OpenGL features, provides helpful wrappers for advanced objects like Vertex Buffer Arrays and shaders, as well as offering a powerful Scene Graph and utility library to help you build your projects.
 
 GitHup repository: https://github.com/dwmkerr/sharpgl
 
