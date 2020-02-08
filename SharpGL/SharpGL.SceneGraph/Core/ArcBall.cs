@@ -16,9 +16,6 @@ namespace SharpGL.SceneGraph.Core
         // Last position of the mouse
         private float mouseDownX, mouseDownY;
 
-        // pivot point
-        private Vertex mouseDownPoint3D;
-
         private Matrix transformMatrix;
         private Matrix scaleMatrix;
 

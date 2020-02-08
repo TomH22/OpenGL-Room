@@ -54,17 +54,18 @@ namespace SharpGL.SceneGraph.Cameras
 		/// uses it to create a composite 'Pick' projection).
 		/// </summary>
         public abstract void TransformProjectionMatrix(OpenGL gl);
-        
+
         /// <summary>
         /// The camera position.
         /// </summary>
         private Vertex position = new Vertex(-1f, -1f, 0.5f);
-        
-		/// <summary>
-		/// Every time a camera is used to project, the projection matrix calculated 
-		/// and stored here.
-		/// </summary>
-		private Matrix projectionMatrix = new Matrix(4 ,4);
+        //private Vertex position = new Vertex(0f, 0f, -100f);
+
+        /// <summary>
+        /// Every time a camera is used to project, the projection matrix calculated 
+        /// and stored here.
+        /// </summary>
+        private Matrix projectionMatrix = new Matrix(4 ,4);
 
         /// <summary>
         /// The screen aspect ratio.

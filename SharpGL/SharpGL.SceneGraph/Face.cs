@@ -65,6 +65,20 @@ namespace SharpGL.SceneGraph
             return va.VectorProduct(vb);
         }
 
+        public Vertex GetSurfaceNormal(Arc parent)
+        {
+            //	Do we have enough vertices for a normal?
+            if (indices.Count < 3)
+                return new Vertex(0, 0, 0);
+
+            Vertex v1 = parent.StartPoint;
+            Vertex v2 = parent.SecondPoint;
+            Vertex v3 = parent.EndPoint;
+            Vertex va = v1 - v2;
+            Vertex vb = v2 - v3;
+            return va.VectorProduct(vb);
+        }
+
         /// <summary>
         /// This function reverses the order of the indices, i.e changes which direction
         /// this face faces in.

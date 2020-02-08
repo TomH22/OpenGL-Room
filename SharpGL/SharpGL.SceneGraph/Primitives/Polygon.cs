@@ -11,35 +11,27 @@ using SharpGL.SceneGraph.Helpers;
 using System.Xml.Serialization;
 using SharpGL.SceneGraph.Transformations;
 using SharpGL.SceneGraph.Assets;
+using SharpGL.Enumerations;
 
 namespace SharpGL.SceneGraph.Primitives
 {
-    public enum FrontBack { FRONT_AND_BACK, FRONT, BACK,  }
-    public enum Way { CW, CCW }// CW and CCW stand for clockwise and counterclockwise
-    public enum DepthFunc { NEVER, LESS, EQUAL, LEQUAL, GREATER, NOTEQUAL, GEQUAL, ALAYS }
-
     /// <summary>
     /// A polygon contains a set of 'faces' which are indexes into a single list
     /// of vertices. The main thing about polygons is that they are easily editable
     /// by the user, depending on the Context they're in.
     /// </summary>
     [Serializable]
-    public class Polygon :
-        SceneElement,
-        IHasObjectSpace,
+    public class Polygon : 
+        ShapeLineBased,
         IRenderable,
         IRayTracable,
-        IFreezable,
         IVolumeBound,
-        IDeepCloneable<Polygon>,
-        IHasMaterial
+        IDeepCloneable<Polygon>
     {
         // ==== Performec OpenGL gl.CullFace(..) ====
         public FrontBack CullFace;
         public Way Way;
         public bool EnableCullFace;
-
-        public DepthFunc DepthFunc;
 
         public uint PolygonMode;       // OpenGL.GL_FILL or OpenGL.GL_LINE
         public float PolygonOffset;     // true: draw lines on area, false: no glPolygonOffset(..)
@@ -48,13 +40,13 @@ namespace SharpGL.SceneGraph.Primitives
         /// <summary>
         /// Initializes a new instance of the <see cref="Polygon"/> class.
         /// </summary>
-		public Polygon()
+		public Polygon(): base()
         {
             Name = "Polygon";
             init();
         }
 
-        public Polygon(string name)
+        public Polygon(string name): base()
         {
             this.Name = name;
             init();
@@ -76,7 +68,7 @@ namespace SharpGL.SceneGraph.Primitives
         /// </summary>
         /// <param name="gl">The OpenGL instance.</param>
         /// <param name="renderMode">The render mode.</param>
-        public virtual void Render(OpenGL gl, RenderMode renderMode)
+        public override void Render(OpenGL gl, RenderMode renderMode)
         {
             //  If we're frozen, use the helper.
             if (freezableHelper.IsFrozen)
@@ -245,7 +237,7 @@ namespace SharpGL.SceneGraph.Primitives
             foreach (Vertex v in vertexData)
             {
                 //	Do we have this vertex already?
-                int at = VertexSearch.Search(vertices, 0, v, 0.01f);
+                int at = VertexSearch.Search(vertices, 0, v, 0.00001f);
 
                 //	Add the vertex, and index it.
                 if (at == -1)
@@ -635,46 +627,6 @@ namespace SharpGL.SceneGraph.Primitives
         }
 
         /// <summary>
-        /// Freezes this instance using the provided OpenGL instance.
-        /// </summary>
-        /// <param name="gl">The OpenGL instance.</param>
-        public void Freeze(OpenGL gl)
-        {
-            //  Freeze using the helper.
-            freezableHelper.Freeze(gl, this);
-        }
-
-        /// <summary>
-        /// Unfreezes this instance using the provided OpenGL instance.
-        /// </summary>
-        /// <param name="gl">The OpenGL instance.</param>
-        public void Unfreeze(OpenGL gl)
-        {
-            //  Unfreeze using the helper.
-            freezableHelper.Unfreeze(gl);
-        }
-
-        /// <summary>
-        /// Pushes us into Object Space using the transformation into the specified OpenGL instance.
-        /// </summary>
-        /// <param name="gl">The OpenGL instance.</param>
-        public void PushObjectSpace(OpenGL gl)
-        {
-            //  Use the helper to push us into object space.
-            hasObjectSpaceHelper.PushObjectSpace(gl);
-        }
-
-        /// <summary>
-        /// Pops us from Object Space using the transformation into the specified OpenGL instance.
-        /// </summary>
-        /// <param name="gl">The gl.</param>
-        public void PopObjectSpace(OpenGL gl)
-        {
-            //  Use the helper to pop us from object space.
-            hasObjectSpaceHelper.PopObjectSpace(gl);
-        }
-
-        /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>
@@ -692,26 +644,6 @@ namespace SharpGL.SceneGraph.Primitives
             //  TODO clone lists.
             return polygon;
         }
-
-        /// <summary>
-        /// The IHasObjectSpace helper.
-        /// </summary>
-        private HasObjectSpaceHelper hasObjectSpaceHelper = new HasObjectSpaceHelper();
-
-        /// <summary>
-        /// The freezable helper.
-        /// </summary>
-        private FreezableHelper freezableHelper = new FreezableHelper();
-
-        /// <summary>
-        /// The faces that make up the polygon.
-        /// </summary>
-        private List<Face> faces = new List<Face>();
-
-        /// <summary>
-        /// The vertices that make up the polygon.
-        /// </summary>
-        private List<Vertex> vertices = new List<Vertex>();
 
         /// <summary>
         /// The UV coordinates (texture coodinates) for the polygon.
@@ -799,16 +731,6 @@ namespace SharpGL.SceneGraph.Primitives
         }
 
         /// <summary>
-        /// Gets the transformation that pushes us into object space.
-        /// </summary>
-        [Description("The Polygon Object Space Transformation"), Category("Polygon")]
-        public LinearTransformation Transformation
-        {
-            get { return hasObjectSpaceHelper.Transformation; }
-            set { hasObjectSpaceHelper.Transformation = value; }
-        }
-
-        /// <summary>
         /// Gets the bounding volume.
         /// </summary>
         [Browsable(false)]
@@ -822,33 +744,6 @@ namespace SharpGL.SceneGraph.Primitives
                 boundingVolumeHelper.BoundingVolume.Pad(0.1f);
                 return boundingVolumeHelper.BoundingVolume;
             }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is frozen.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if this instance is frozen; otherwise, <c>false</c>.
-        /// </value>
-        [Browsable(false)]
-        [XmlIgnore]
-        public bool IsFrozen
-        {
-            get { return freezableHelper.IsFrozen; }
-        }
-
-        /// <summary>
-        /// Material to be used when rendering the polygon in lighted mode.
-        /// This material may be overriden on a per-face basis.
-        /// </summary>
-        /// <value>
-        /// The material.
-        /// </value>
-        [XmlIgnore]
-        public Material Material
-        {
-            get;
-            set;
         }
     }
 }

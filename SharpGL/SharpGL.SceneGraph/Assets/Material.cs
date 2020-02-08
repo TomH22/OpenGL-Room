@@ -220,6 +220,11 @@ namespace SharpGL.SceneGraph.Assets
             return getMaterial(getBrush(0x42, 0xa6, 0x9a), gl);
         }
 
+        public static Material Purple(OpenGL gl)
+        {
+            return getMaterial(getBrush(127, 127, 254), gl);
+        }
+
         public static Material Green(OpenGL gl)
         {
             return getMaterial(getBrush(80, 233, 80), gl);

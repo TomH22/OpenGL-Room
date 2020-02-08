@@ -692,4 +692,8 @@ namespace SharpGL.Enumerations
         Texture2D = OpenGL.GL_TEXTURE_2D,
         Texture3D = OpenGL.GL_TEXTURE_3D
     }
+
+    public enum FrontBack { FRONT_AND_BACK, FRONT, BACK, }
+    public enum Way { CW, CCW }// CW and CCW stand for clockwise and counterclockwise
+    public enum DepthFunc { NEVER, LESS, EQUAL, LEQUAL, GREATER, NOTEQUAL, GEQUAL, ALAYS }
 }

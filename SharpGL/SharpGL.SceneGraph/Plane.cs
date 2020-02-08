@@ -5,17 +5,23 @@ using System.Text;
 
 namespace SharpGL.SceneGraph
 {
-  /// <summary>
-  /// A plane.
-  /// </summary>
+    /// <summary>
+    /// A plane.
+    /// </summary>
     [Serializable()]
     public class Plane
     {
-      /// <summary>
-      /// Initializes a new instance of the <see cref="Plane"/> class.
-      /// </summary>
-        public Plane() 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Plane"/> class.
+        /// </summary>
+        public Plane()
         {
+        }
+
+        public Plane(Vertex position, Vertex normal)
+        {
+            this.position = position;
+            this.normal = normal;
         }
 
         /// <summary>
@@ -41,11 +47,21 @@ namespace SharpGL.SceneGraph
         /// <summary>
         /// The normal.
         /// </summary>
-      public Vertex normal = new Vertex(0, 0, 0);
+        public Vertex normal = new Vertex(0, 0, 0);
 
-      /// <summary>
-      /// The equation.
-      /// </summary>
+        /// <summary>
+        /// The equation.
+        /// </summary>
         public float[] equation; // ax + by + cz + d = 0.
+
+        /// <summary>
+		/// Returns the distance of a point to the plane.
+		/// </summary>
+		public float GetPointDistance(Vertex point)
+        {
+            Vertex vec = new Vertex(this.position);
+            vec = vec - point;
+            return (float)Math.Abs(this.normal.ScalarProduct(vec));
+        }
     }
 }

@@ -142,6 +142,11 @@ namespace SharpGL.SceneGraph
             return new Vertex(X, Y, Z);
         }
 
+        public static Vertex operator *(float mult, Vertex rhs)
+        {
+            return new Vertex(mult* rhs.x, mult * rhs.Y, mult * rhs.Z);
+        }
+
         /// <summary>
         /// Implements the operator /.
         /// </summary>
@@ -153,6 +158,38 @@ namespace SharpGL.SceneGraph
         public static Vertex operator /(Vertex lhs, float rhs)
         {
             return new Vertex(lhs.X / rhs, lhs.Y / rhs, lhs.Z / rhs);
+        }
+
+        /// <summary> 
+        /// Component access
+        /// </summary>
+        public float this[int i]
+        {
+            get
+            {
+                switch (i)
+                {
+                    case 0: return this.X;
+                    case 1: return this.Y;
+                    case 2: return this.Z;
+                    default: return float.NaN;
+                }
+            }
+            set
+            {
+                switch (i)
+                {
+                    case 0: this.X = value; return;
+                    case 1: this.Y = value; return;
+                    case 2: this.Z = value; return;
+                    default: throw new ArgumentOutOfRangeException();
+                }
+            }
+        }
+
+        public bool EqualsAlmostExcactly(Vertex rhs)
+        {
+            return (rhs - this).ABSSqr <= 0.0000000001;
         }
 
         /// <summarY>
@@ -199,6 +236,17 @@ namespace SharpGL.SceneGraph
         }
 
         /// <summary>
+        /// Returns the square length of the vector.
+        /// </summary>
+        public double ABSSqr
+        {
+            get
+            {
+                return this.X * this.X + this.Y * this.Y + this.Z * this.Z;
+            }
+        }
+
+        /// <summary>
         /// Normalizes this instance.
         /// </summary>
         public void Normalize()
@@ -209,6 +257,68 @@ namespace SharpGL.SceneGraph
         public static implicit operator float[](Vertex rhs)
         {
             return new float[] { rhs.X, rhs.Y, rhs.Z };
+        }
+
+        /// <summary>
+        /// Returns the angle to another vector, both interpreted as "direction".
+        /// Always between -PI and + PI, that is, the order of the directions plays a role.
+        /// </summary>
+        public double getAngle(Vertex dir, Vertex viewDir)
+        {
+            Vertex thisNomalized = new Vertex(this);
+            thisNomalized.Normalize();
+
+            Vertex viewDirNormalized = new Vertex(viewDir);
+            viewDirNormalized.Normalize();
+
+            double dotProduct = thisNomalized.ScalarProduct(viewDirNormalized);
+
+            double arc = Math.Acos(dotProduct);
+
+            // We construct three points from the two directions.
+            // Which are then checked to see how they are.
+            // This gives the sign of the angle.
+            Vertex vec1 = new Vertex(this);
+            Vertex vec2 = new Vertex();
+            Vertex vec3 = new Vertex(dir);
+
+            try
+            {
+                if (vec1.areClockwise(vec2, vec3, viewDir))
+                    arc *= -1;
+                return arc;
+            }
+            // The points lie on a straight line.
+            catch (InvalidOperationException)
+            {
+                return arc;
+            }
+        }
+
+        /// <summary>
+        /// Tests whether three points in this order (calling vector first)
+        /// Lie clockwise to each other.
+        /// Seen in the direction indicated by the third parameter.
+        /// Throws "InvalidOperationException" if the points lie on a line.
+        /// </summary>
+        /// <param name = "p2"> Second point. </param>
+        /// <param name = "p3"> Third point. </param>
+        /// <param name = "viewDir"> View direction from which the sense of rotation should be calculated. </param>
+        public bool areClockwise(Vertex p2, Vertex p3, Vertex viewDir)
+        {
+            Vertex u = p3 - this;
+            u.Normalize();
+
+            Vertex v = p2 - this;
+            v.Normalize();
+
+            Vertex w = u.VectorProduct(v);
+
+            double test = w.ScalarProduct(viewDir);
+            if (Math.Abs(test) < 0.000001)
+                throw new InvalidOperationException("All points are on one line!");
+
+            return test < 0;
         }
 
         private float x;

@@ -8,14 +8,15 @@ using System.Text;
 using System.Windows.Forms;
 using SharpGL;
 using SharpGL.SceneGraph;
+using SharpGL.SceneGraph.Primitives;
 using SharpGL.SceneGraph.Cameras;
 using SharpGL.SceneGraph.Collections;
 using SharpGL.SceneGraph.Core;
 using SharpGL.SceneGraph.Lighting;
-using SharpGL.SceneGraph.Primitives;
 using SharpGL.SceneGraph.Assets;
 using SharpGL.SceneGraph.Quadrics;
 using SharpGL.SceneGraph.Effects;
+using SharpGL.Enumerations;
 
 namespace GL_Room
 {
@@ -150,6 +151,9 @@ namespace GL_Room
         /// </summary>
         private void addRoomObjects(SceneContainer sceneContainer)
         {
+            Circle circle = new Circle(new Vertex(193.93f, 100.02f, 0f), new Vertex(340.03f, 196.04f, 0f), new Vertex(305.53f, 322.04f, 0f));
+            RoundColumn roundColumn = new RoundColumn(sceneControl1.OpenGL, "Column 1", circle, -1090.10747004971f, 1333.73756501464f);
+            
             // ===============
             // ==== Walls ====
             // ===============
@@ -295,6 +299,8 @@ namespace GL_Room
             sceneContainer.AddChild(window);
             sceneContainer.AddChild(door);
             sceneContainer.AddChild(electricalOutlet);
+            sceneContainer.AddChild(roundColumn);
+
         }
 
         private void addElectricalOutletSymbol(WallObject electricalOutlet)

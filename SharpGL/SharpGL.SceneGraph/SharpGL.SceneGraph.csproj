@@ -89,7 +89,11 @@
     <Compile Include="OpenGLSceneGraphExtensions.cs" />
     <Compile Include="ParticleSystem\Particle.cs" />
     <Compile Include="ParticleSystem\ParticleSystems.cs" />
+    <Compile Include="Primitives\Arc.cs" />
+    <Compile Include="Primitives\Circle.cs" />
+    <Compile Include="Primitives\Line.cs" />
     <Compile Include="Primitives\Point.cs" />
+    <Compile Include="Primitives\ShapeLineBased.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Assets\Asset.cs" />
     <Compile Include="Assets\Material.cs" />
@@ -111,6 +115,8 @@
     <Compile Include="Core\IRenderable.cs" />
     <Compile Include="Core\IVolumeBound.cs" />
     <Compile Include="Properties\SharedAssemblyInfo.cs" />
+    <Compile Include="Quadrics\RoomObject.cs" />
+    <Compile Include="Quadrics\RoundColumn.cs" />
     <Compile Include="Quadrics\Wall.cs" />
     <Compile Include="Quadrics\WallObject.cs" />
     <Compile Include="Transformations\LinearTransformation.cs" />
