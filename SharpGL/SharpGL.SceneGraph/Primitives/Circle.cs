@@ -102,8 +102,8 @@ namespace SharpGL.SceneGraph.Primitives
                     face.Material.Pop(gl);
             }
 
-            //	Restore the attributes.
-            //gl.PopAttrib();
+            // Restore the attributes.
+            // gl.PopAttrib();
         }
     }
 }

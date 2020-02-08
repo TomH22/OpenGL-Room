@@ -30,7 +30,7 @@ namespace SharpGL.SceneGraph.Primitives
 
         private float radius;
 
-        public Arc(Vertex startPoint, Vertex secondPoint, Vertex endPoint)
+        public Arc(Vertex startPoint, Vertex secondPoint, Vertex endPoint):base()
         {
             this.startPoint = startPoint;
             this.secondPoint = secondPoint;
@@ -151,7 +151,7 @@ namespace SharpGL.SceneGraph.Primitives
         }
 
         /// <summary>
-        /// Returns the opening angle of the arch.
+        /// Returns the opening angle of the arc.
         /// </summary>
         protected double getArcAngle()
         {

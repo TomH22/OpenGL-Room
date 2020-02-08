@@ -64,7 +64,7 @@ namespace SharpGL.SceneGraph.Primitives
 
         /// <summary>
         /// Calculates whether the two lines (defined by lines) have an intersection.
-        /// If they are parallel or identical, they have no intersection
+        /// If they are parallel or identical, they have no intersection.
         /// </summary>
         public bool HaveIntersection(Line l2)
         {
@@ -82,11 +82,9 @@ namespace SharpGL.SceneGraph.Primitives
 
         /// <summary>
         /// Internal auxiliary function for calculating the intersection of two straight lines.
-        /// Returns true if they intersect, still calculating propertyString and t
-        /// (variables of the parameter display)
         ///
         /// TODO: Still not working if the coefficient matrix of x and y values is singular.
-        /// Possibly. Use pivoting
+        /// Maybe use pivoting.
         /// </summary>
         private bool intersectInternal(Line l2, out float s, out float t)
         {

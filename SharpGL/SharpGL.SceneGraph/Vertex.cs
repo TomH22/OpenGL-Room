@@ -261,7 +261,8 @@ namespace SharpGL.SceneGraph
 
         /// <summary>
         /// Returns the angle to another vector, both interpreted as "direction".
-        /// Always between -PI and + PI, that is, the order of the directions plays a role.
+        /// Always between -PI and + PI.
+        /// The order of the directions plays a role.
         /// </summary>
         public double getAngle(Vertex dir, Vertex viewDir)
         {
@@ -296,9 +297,10 @@ namespace SharpGL.SceneGraph
         }
 
         /// <summary>
-        /// Tests whether three points in this order (calling vector first)
-        /// Lie clockwise to each other.
+        /// Tests whether three points in this order.
+        /// 
         /// Seen in the direction indicated by the third parameter.
+        /// 
         /// Throws "InvalidOperationException" if the points lie on a line.
         /// </summary>
         /// <param name = "p2"> Second point. </param>
