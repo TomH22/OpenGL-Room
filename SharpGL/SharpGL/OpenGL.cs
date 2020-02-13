@@ -1276,6 +1276,7 @@ namespace SharpGL
         [DllImport(LIBRARY_GLU, SetLastError = true)] private static extern void gluLookAt(double eyex, double eyey, double eyez, double centerx, double centery, double centerz, double upx, double upy, double upz);
         [DllImport(LIBRARY_GLU, SetLastError = true)] private static extern void gluProject(double objx, double objy, double objz, double[] modelMatrix, double[] projMatrix, int[] viewport, double[] winx, double[] winy, double[] winz);
         [DllImport(LIBRARY_GLU, SetLastError = true)] private static extern void gluUnProject(double winx, double winy, double winz, double[] modelMatrix, double[] projMatrix, int[] viewport, ref double objx, ref double objy, ref double objz);
+        [DllImport(LIBRARY_GLU, SetLastError = true)] private static extern void gluUnProject4(double winx, double winy, double winz, double winw, double[] modelMatrix, double[] projMatrix, int[] viewport, double nearVal, double farVal, ref double objx, ref double objy, ref double objz, ref double objw);
         [DllImport(LIBRARY_GLU, SetLastError = true)] private static extern void gluScaleImage(int format, int widthin, int heightin, int typein, int[] datain, int widthout, int heightout, int typeout, int[] dataout);
         [DllImport(LIBRARY_GLU, SetLastError = true)] private static extern void gluBuild1DMipmaps(uint target, uint components, int width, uint format, uint type, IntPtr data);
         [DllImport(LIBRARY_GLU, SetLastError = true)] private static extern void gluBuild2DMipmaps(uint target, uint components, int width, int height, uint format, uint type, IntPtr data);
@@ -5994,9 +5995,11 @@ namespace SharpGL
             var viewport = new int[4];
             GetDouble(GL_MODELVIEW_MATRIX, modelview);
             GetDouble(GL_PROJECTION_MATRIX, projection);
+            //projection[14] = 0;
+            //projection[15] = 8000;
             GetInteger(GL_VIEWPORT, viewport);
-            var result = new double[3];
-            gluUnProject(winx, winy, winz, modelview, projection, viewport, ref result[0], ref result[1], ref result[2]);
+            var result = new double[4];
+            gluUnProject(winx, winy, winz, modelview, projection, viewport, ref result[0], ref result[1], ref result[2]);;
 
             PostGLCall();
 

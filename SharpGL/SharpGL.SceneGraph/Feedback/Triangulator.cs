@@ -73,7 +73,7 @@ namespace SharpGL.SceneGraph.Feedback
                         }
 
                         //	Add a new face to the current polygon.
-                        triangle.AddFaceFromVertexData(vertices);
+                        triangle.SetFacesFromVertexData(vertices);
 
                         break;
                 }

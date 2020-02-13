@@ -14,12 +14,10 @@ namespace SharpGL.SceneGraph
     [TypeConverter(typeof(VertexConverter))]
     public struct Vertex
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Vertex"/> struct.
-        /// </summary>
-        /// <param name="x">The x.</param>
-        /// <param name="y">The y.</param>
-        /// <param name="z">The z.</param>
+        private float x;
+        private float y;
+        private float z;
+
         public Vertex(float x, float y, float z)
         {
             this.x = x; 
@@ -27,10 +25,6 @@ namespace SharpGL.SceneGraph
             this.z = z;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Vertex"/> struct.
-        /// </summary>
-        /// <param name="vertex">The vertex.</param>
         public Vertex(Vertex vertex)
         {
             this.x = vertex.X;
@@ -38,12 +32,6 @@ namespace SharpGL.SceneGraph
             this.z = vertex.Z;
         }
 
-        /// <summary>
-        /// Sets the specified X.
-        /// </summary>
-        /// <param name="X">The X.</param>
-        /// <param name="Y">The Y.</param>
-        /// <param name="Z">The Z.</param>
         public void Set(float X, float Y, float Z)
         {
             this.X = X; this.Y = Y; this.Z = Z;
@@ -56,66 +44,26 @@ namespace SharpGL.SceneGraph
             return "(" + X + ", " + Y + ", " + Z + ")";
         }
 
-        /// <summary>
-        /// Implements the operator +.
-        /// </summary>
-        /// <param name="lhs">The LHS.</param>
-        /// <param name="rhs">The RHS.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
         public static Vertex operator +(Vertex lhs, Vertex rhs)
         {
             return new Vertex(lhs.X + rhs.X, lhs.Y + rhs.Y, lhs.Z + rhs.Z);
         }
 
-        /// <summary>
-        /// Implements the operator -.
-        /// </summary>
-        /// <param name="lhs">The LHS.</param>
-        /// <param name="rhs">The RHS.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
         public static Vertex operator -(Vertex lhs, Vertex rhs)
         {
             return new Vertex(lhs.X - rhs.X, lhs.Y - rhs.Y, lhs.Z - rhs.Z);
         }
 
-        /// <summary>
-        /// Implements the operator *.
-        /// </summary>
-        /// <param name="lhs">The LHS.</param>
-        /// <param name="rhs">The RHS.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
         public static Vertex operator *(Vertex lhs, Vertex rhs)
         {
             return new Vertex(lhs.X * rhs.X, lhs.Y * rhs.Y, lhs.Z * rhs.Z);
         }
 
-        /// <summary>
-        /// Implements the operator *.
-        /// </summary>
-        /// <param name="lhs">The LHS.</param>
-        /// <param name="rhs">The RHS.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
         public static Vertex operator *(Vertex lhs, float rhs)
         {
             return new Vertex(lhs.X * rhs, lhs.Y * rhs, lhs.Z * rhs);
         }
 
-        /// <summary>
-        /// Implements the operator *.
-        /// </summary>
-        /// <param name="lhs">The LHS.</param>
-        /// <param name="rhs">The RHS.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
         public static Vertex operator * (Vertex lhs, Matrix rhs)
         {
             float X = lhs.X * (float)rhs[0,0] + lhs.Y * (float)rhs[1,0] + lhs.Z * (float)rhs[2,0];
@@ -125,14 +73,6 @@ namespace SharpGL.SceneGraph
             return new Vertex(X, Y, Z);
         }
 
-        /// <summary>
-        /// Implements the operator *.
-        /// </summary>
-        /// <param name="lhs">The LHS.</param>
-        /// <param name="rhs">The RHS.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
         public static Vertex operator *(Matrix lhs, Vertex rhs)
         {
             float X = rhs.X * (float)lhs[0, 0] + rhs.Y * (float)lhs[1, 0] + rhs.Z * (float)lhs[2, 0];
@@ -147,14 +87,6 @@ namespace SharpGL.SceneGraph
             return new Vertex(mult* rhs.x, mult * rhs.Y, mult * rhs.Z);
         }
 
-        /// <summary>
-        /// Implements the operator /.
-        /// </summary>
-        /// <param name="lhs">The LHS.</param>
-        /// <param name="rhs">The RHS.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
         public static Vertex operator /(Vertex lhs, float rhs)
         {
             return new Vertex(lhs.X / rhs, lhs.Y / rhs, lhs.Z / rhs);
@@ -254,16 +186,22 @@ namespace SharpGL.SceneGraph
             UnitLength();
         }
 
+        /// <summary>
+        /// Convertes the coordinates in an float array
+        /// </summary>
+        /// <remarks>I don't understand the need of the implicit key word?</remarks>
         public static implicit operator float[](Vertex rhs)
         {
             return new float[] { rhs.X, rhs.Y, rhs.Z };
         }
 
         /// <summary>
-        /// Returns the angle to another vector, both interpreted as "direction".
-        /// Always between -PI and + PI.
-        /// The order of the directions plays a role.
+        /// Returns the angle to another vector.
         /// </summary>
+        /// <remarks>
+        /// The order of the directions plays a role.
+        /// </remarks>
+        /// <returns>Value between -PI and + PI.</returns>
         public double getAngle(Vertex dir, Vertex viewDir)
         {
             Vertex thisNomalized = new Vertex(this);
@@ -277,8 +215,7 @@ namespace SharpGL.SceneGraph
             double arc = Math.Acos(dotProduct);
 
             // We construct three points from the two directions.
-            // Which are then checked to see how they are.
-            // This gives the sign of the angle.
+            // Which are then checked, to see how they are.
             Vertex vec1 = new Vertex(this);
             Vertex vec2 = new Vertex();
             Vertex vec3 = new Vertex(dir);
@@ -297,21 +234,20 @@ namespace SharpGL.SceneGraph
         }
 
         /// <summary>
-        /// Tests whether three points in this order.
+        /// Tests the order of the points.
         /// 
-        /// Seen in the direction indicated by the third parameter.
-        /// 
-        /// Throws "InvalidOperationException" if the points lie on a line.
+        /// Seen in the direction, indicated by the third parameter.
         /// </summary>
+        /// <param name = "p1"> First point. </param>
         /// <param name = "p2"> Second point. </param>
-        /// <param name = "p3"> Third point. </param>
         /// <param name = "viewDir"> View direction from which the sense of rotation should be calculated. </param>
-        public bool areClockwise(Vertex p2, Vertex p3, Vertex viewDir)
+        /// <exception cref="InvalidOperationException">if the points lie on a line</exception>
+        public bool areClockwise(Vertex p1, Vertex p2, Vertex viewDir)
         {
-            Vertex u = p3 - this;
+            Vertex u = p2 - this;
             u.Normalize();
 
-            Vertex v = p2 - this;
+            Vertex v = p1 - this;
             v.Normalize();
 
             Vertex w = u.VectorProduct(v);
@@ -322,10 +258,6 @@ namespace SharpGL.SceneGraph
 
             return test < 0;
         }
-
-        private float x;
-        private float y;
-        private float z;
         
         /// <summary>
         /// The X coordinate.

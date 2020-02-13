@@ -15,14 +15,13 @@ using System.Text;
 
 namespace SharpGL.SceneGraph.Primitives
 {
-    public class Circle :Arc
+    public class Circle : Arc
     {
         private List<Vertex> circleDrawPoints;
 
         public Circle(Vertex startPoint, Vertex secondPoint, Vertex endPoint) : base(startPoint, secondPoint, endPoint)
         {
             calcCircleDrawPoints();
-            SetFacesFromVertexData(circleDrawPoints.ToArray());
         }
 
         private void calcCircleDrawPoints()
@@ -43,67 +42,15 @@ namespace SharpGL.SceneGraph.Primitives
         /// </summary>
         public override void Render(OpenGL gl, RenderMode renderMode)
         {
-            //  If we're frozen, use the helper.
-            if (freezableHelper.IsFrozen)
+            gl.Begin(OpenGL.GL_POLYGON);
+
+            foreach (Vertex vertex in circleDrawPoints)
             {
-                freezableHelper.Render(gl);
-                return;
+                //	Set the vertex.
+                gl.Vertex(vertex);
             }
 
-            foreach (Face face in faces)
-            {
-                //  If the face has its own material, push it.
-                if (face.Material != null)
-                    face.Material.Push(gl);
-
-                gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, LineMode);
-
-                switch (DepthFunc)
-                {
-                    case SharpGL.Enumerations.DepthFunc.EQUAL:
-                        gl.DepthFunc(OpenGL.GL_EQUAL);
-                        break;
-                    case SharpGL.Enumerations.DepthFunc.ALAYS:
-                        gl.DepthFunc(OpenGL.GL_ALWAYS);
-                        break;
-                    default:
-                        gl.DepthFunc(OpenGL.GL_LESS);
-                        break;
-                        // switch not comleted!
-                }
-
-                if (LineMode == OpenGL.GL_LINE)
-                {
-                    gl.LineWidth(0.9f);
-                }
-
-                if (Offset < 0 || Offset > 0)
-                {
-                    gl.Enable(OpenGL.GL_POLYGON_OFFSET_LINE);
-                    gl.PolygonOffset(Offset, Offset);
-                }
-                else
-                {
-                    gl.Disable(OpenGL.GL_POLYGON_OFFSET_LINE);
-                }
-
-                gl.Begin(OpenGL.GL_POLYGON);
-
-                foreach (Index index in face.Indices)
-                {
-                    //	Set the vertex.
-                    gl.Vertex(vertices[index.Vertex]);
-                }
-
-                gl.End();
-
-                //  If the face has its own material, pop it.
-                if (face.Material != null)
-                    face.Material.Pop(gl);
-            }
-
-            // Restore the attributes.
-            // gl.PopAttrib();
+            gl.End();
         }
     }
 }

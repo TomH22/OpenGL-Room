@@ -15,7 +15,6 @@ namespace SharpGL.SceneGraph.Helpers
         /// <summary>
         /// Pushes us into Object Space using the transformation into the specified OpenGL instance.
         /// </summary>
-        /// <param name="gl">The OpenGL instance.</param>
         public void PushObjectSpace(OpenGL gl)
         {
             //  Push the matrix.
@@ -28,7 +27,6 @@ namespace SharpGL.SceneGraph.Helpers
         /// <summary>
         /// Pops us from Object Space using the transformation into the specified OpenGL instance.
         /// </summary>
-        /// <param name="gl">The gl.</param>
         public void PopObjectSpace(OpenGL gl)
         {
             //  Pop the matrix.
@@ -38,7 +36,6 @@ namespace SharpGL.SceneGraph.Helpers
         /// <summary>
         /// Deeps the clone.
         /// </summary>
-        /// <returns></returns>
         public HasObjectSpaceHelper DeepClone()
         {
             return new HasObjectSpaceHelper()

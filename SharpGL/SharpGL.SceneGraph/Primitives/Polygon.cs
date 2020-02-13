@@ -21,21 +21,32 @@ namespace SharpGL.SceneGraph.Primitives
     /// by the user, depending on the Context they're in.
     /// </summary>
     [Serializable]
-    public class Polygon : 
+    public class Polygon :
         ShapeLineBased,
         IRenderable,
         IRayTracable,
         IVolumeBound,
         IDeepCloneable<Polygon>
     {
-        // ==== Performec OpenGL gl.CullFace(..) ====
-        public FrontBack CullFace;
-        public Way Way;
-        public bool EnableCullFace;
+        /// <summary>
+        /// The UV coordinates (texture coodinates) for the polygon.
+        /// </summary>
+        private List<UV> uvs = new List<UV>();
 
-        public uint PolygonMode;       // OpenGL.GL_FILL or OpenGL.GL_LINE
-        public float PolygonOffset;     // true: draw lines on area, false: no glPolygonOffset(..)
-        public bool PolygonOffsetFill;
+        /// <summary>
+        /// The normals of the polygon object.
+        /// </summary>
+        private List<Vertex> normals = new List<Vertex>();
+
+        /// <summary>
+        /// Should the normals be drawn?
+        /// </summary>
+        private bool drawNormals = false;
+
+        /// <summary>
+        /// The bounding volume helper - used to ease implementation of IBoundVolume.
+        /// </summary>
+        public BoundingVolumeHelper boundingVolumeHelper = new BoundingVolumeHelper();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Polygon"/> class.
@@ -43,123 +54,25 @@ namespace SharpGL.SceneGraph.Primitives
 		public Polygon(): base()
         {
             Name = "Polygon";
-            init();
         }
 
-        public Polygon(string name): base()
+        public Polygon(string name, Vertex[] vertex1): base()
         {
             this.Name = name;
-            init();
-        }
-
-        private void init()
-        {
-            CullFace = FrontBack.FRONT_AND_BACK;
-            EnableCullFace = false;
-            Way = Way.CCW;
-            DepthFunc = DepthFunc.LESS;// standard
-            PolygonMode = OpenGL.GL_FILL;
-            PolygonOffset = 0f;
-            PolygonOffsetFill = false;
+            SetFacesFromVertexData(vertex1);
         }
 
         /// <summary>
         /// Render to the provided instance of OpenGL.
         /// </summary>
-        /// <param name="gl">The OpenGL instance.</param>
-        /// <param name="renderMode">The render mode.</param>
         public override void Render(OpenGL gl, RenderMode renderMode)
         {
-            //  If we're frozen, use the helper.
-            if (freezableHelper.IsFrozen)
-            {
-                freezableHelper.Render(gl);
-                return;
-            }
-
             //  Go through each face.
             foreach (Face face in faces)
             {
                 //  If the face has its own material, push it.
                 if (face.Material != null)
                     face.Material.Push(gl);
-
-                gl.PolygonMode(OpenGL.GL_FRONT_AND_BACK, PolygonMode);
-
-                if (EnableCullFace)
-                {
-                    // Pages can only be viewed from certain angles.
-                    switch (CullFace)
-                    {
-                        case FrontBack.FRONT_AND_BACK:
-                            gl.CullFace(OpenGL.GL_FRONT_AND_BACK);
-                            break;
-                        case FrontBack.FRONT:
-                            gl.CullFace(OpenGL.GL_FRONT);
-                            break;
-                        case FrontBack.BACK:
-                            gl.CullFace(OpenGL.GL_BACK);
-                            break;
-                    }
-                    gl.Enable(OpenGL.GL_CULL_FACE);
-                }
-                else
-                {
-                    gl.Disable(OpenGL.GL_CULL_FACE);
-                }
-
-                // Is front face defined per clock wise or against.
-                switch (Way)
-                {
-                    case Way.CW:
-                        gl.FrontFace(OpenGL.GL_CW);
-                        break;
-                    case Way.CCW:
-                        gl.FrontFace(OpenGL.GL_CCW);
-                        break;
-                }
-
-                switch (DepthFunc)
-                {
-                    case DepthFunc.EQUAL:
-                        gl.DepthFunc(OpenGL.GL_EQUAL);
-                        break;
-                    case DepthFunc.ALAYS:
-                        gl.DepthFunc(OpenGL.GL_ALWAYS);
-                        break;
-                    default:
-                        gl.DepthFunc(OpenGL.GL_LESS);
-                        break;
-                        // switch not comleted!
-                }
-
-
-                if (PolygonMode == OpenGL.GL_LINE)
-                {
-                    gl.LineWidth(0.9f);
-                }
-
-                if (PolygonOffset < 0 || PolygonOffset > 0)
-                {
-                    gl.Enable(OpenGL.GL_POLYGON_OFFSET_LINE);
-                    gl.PolygonOffset(PolygonOffset, PolygonOffset);
-                }
-                else
-                {
-                    gl.Disable(OpenGL.GL_POLYGON_OFFSET_LINE);
-                }
-
-                if (PolygonOffsetFill)
-                {
-                    gl.Enable(OpenGL.GL_POLYGON_OFFSET_FILL);
-                    gl.PolygonOffset(-1f, -1f);
-                }
-                else
-                {
-                    gl.Disable(OpenGL.GL_POLYGON_OFFSET_FILL);
-                }
-
-
 
                 //Begin drawing a polygon.
                 if (face.Indices.Count == 2)
@@ -222,37 +135,6 @@ namespace SharpGL.SceneGraph.Primitives
                 //	Restore the attributes.
                 gl.PopAttrib();
             }
-        }
-        /// <summary>
-        /// This function is cool, just stick in a set of points, it'll add them to the
-        /// array, and create a face. It will take account of duplicate vertices too!
-        /// </summary>
-        /// <param name="vertexData">A set of vertices to make into a face.</param>
-        public virtual void AddFaceFromVertexData(Vertex[] vertexData)
-        {
-            //	Create a face.
-            Face newFace = new Face();
-
-            //	Go through the vertices...
-            foreach (Vertex v in vertexData)
-            {
-                //	Do we have this vertex already?
-                int at = VertexSearch.Search(vertices, 0, v, 0.00001f);
-
-                //	Add the vertex, and index it.
-                if (at == -1)
-                {
-                    newFace.Indices.Add(new Index(vertices.Count));
-                    vertices.Add(v);
-                }
-                else
-                {
-                    newFace.Indices.Add(new Index(at));
-                }
-            }
-
-            //	Add the face.
-            faces.Add(newFace);
         }
 
         /// <summary>
@@ -639,31 +521,10 @@ namespace SharpGL.SceneGraph.Primitives
 
             //  Clone the data.
             polygon.hasObjectSpaceHelper = hasObjectSpaceHelper.DeepClone();
-            polygon.freezableHelper = new FreezableHelper();
 
             //  TODO clone lists.
             return polygon;
         }
-
-        /// <summary>
-        /// The UV coordinates (texture coodinates) for the polygon.
-        /// </summary>
-        private List<UV> uvs = new List<UV>();
-
-        /// <summary>
-        /// The normals of the polygon object.
-        /// </summary>
-        private List<Vertex> normals = new List<Vertex>();
-
-        /// <summary>
-        /// Should the normals be drawn?
-        /// </summary>
-        private bool drawNormals = false;
-
-        /// <summary>
-        /// The bounding volume helper - used to ease implementation of IBoundVolume.
-        /// </summary>
-        public BoundingVolumeHelper boundingVolumeHelper = new BoundingVolumeHelper();
 
         /// <summary>
         /// Gets or sets the faces.

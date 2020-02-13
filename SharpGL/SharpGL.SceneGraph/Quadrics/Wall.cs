@@ -7,6 +7,8 @@ using System.Xml.Serialization;
 using SharpGL.SceneGraph.Transformations;
 using SharpGL.SceneGraph.Primitives;
 using SharpGL.Enumerations;
+using SharpGL.OpenGLAttributes;
+using SharpGL.SceneGraph.Effects;
 
 namespace SharpGL.SceneGraph.Quadrics
 {
@@ -19,37 +21,56 @@ namespace SharpGL.SceneGraph.Quadrics
 
         public Wall(Vertex[] vertex1, string name, OpenGL gl)
         {
+            DepthBufferAttributes depthBufferAttributes = new DepthBufferAttributes();
+            depthBufferAttributes.DepthFunction = DepthFunction.LessThanOrEqual;
+            depthBufferAttributes.EnableDepthTest = true;
+
             Name = name;
 
-            SharpGL.SceneGraph.Primitives.Polygon polyFill = new Polygon(this.Name);
+            // ==== Fill polygon ===
+            PolygonAttributes polygonFillAttributes = new PolygonAttributes();
+            polygonFillAttributes.PolygonMode = PolygonMode.Filled;
+            polygonFillAttributes.CullFaces = FaceMode.Back;
+            polygonFillAttributes.EnableCullFace = true;
+
+            polygonFillAttributes.OffsetFactor = 0f;
+            polygonFillAttributes.OffsetBias = 0;
+            polygonFillAttributes.EnableOffsetFill = true;
+
+            OpenGLAttributesEffect polyFillEffect = new OpenGLAttributesEffect();
+            polyFillEffect.PolygonAttributes = polygonFillAttributes;
+            //polyFillEffect.DepthBufferAttributes = depthBufferAttributes;
+
+            SharpGL.SceneGraph.Primitives.Polygon polyFill = new Polygon(this.Name, vertex1);
             polyFill.Material = Materials.Pink(gl);
-            polyFill.PolygonMode = OpenGL.GL_FILL;
-            polyFill.PolygonOffset = 0f;
-            polyFill.AddFaceFromVertexData(vertex1);
-            polyFill.EnableCullFace = true;
-            polyFill.CullFace = FrontBack.BACK;
-            //polyFill.DepthFunc = DepthFunc.EQUAL;
+            polyFill.AddEffect(polyFillEffect);
             this.Children.Add(polyFill);
 
-            SharpGL.SceneGraph.Primitives.Polygon polyBorder = new Polygon(this.Name);
+            // ==== Border polygon ===
+            PolygonAttributes polygonBorderAttributes = new PolygonAttributes();
+            polygonBorderAttributes.PolygonMode = PolygonMode.Lines;
+            polygonBorderAttributes.OffsetFactor = -.5f;
+            polygonBorderAttributes.OffsetBias = -.5f;
+            polygonBorderAttributes.EnableOffsetLine = true;
+            polygonBorderAttributes.CullFaces = FaceMode.Back;
+            polygonBorderAttributes.EnableCullFace = true;
+
+            OpenGLAttributesEffect polyBorderEffect = new OpenGLAttributesEffect();
+            polyBorderEffect.PolygonAttributes = polygonBorderAttributes;
+            //polyBorderEffect.DepthBufferAttributes = depthBufferAttributes;
+
+            SharpGL.SceneGraph.Primitives.Polygon polyBorder = new Polygon(this.Name, vertex1);
             polyBorder.Material = Materials.DarkGrey(gl);
-            polyBorder.PolygonMode = OpenGL.GL_LINE;
-            polyBorder.PolygonOffset = -1f;
-            polyBorder.AddFaceFromVertexData(vertex1);
-            polyBorder.EnableCullFace = true;
-            polyBorder.CullFace = FrontBack.BACK;
-            //polyFill.DepthFunc = DepthFunc.EQUAL;
+            polyBorder.AddEffect(polyBorderEffect);
             this.Children.Add(polyBorder);
 
             this.polyFill = polyFill;
         }
 
-        // The draw style, can be filled, line, silouhette or points.
-        protected DrawStyle drawStyle = DrawStyle.Fill;
+        public override void Render(OpenGL gl, RenderMode renderMode)
+        {
 
-        protected Orientation orientation = Orientation.Outside;
-        protected Normals normals = Normals.Smooth;
-        protected bool textureCoords = false;
+        }
 
         /// <summary>
         /// Gets the bounding volume.

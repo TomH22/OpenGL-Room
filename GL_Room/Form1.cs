@@ -30,7 +30,6 @@ namespace GL_Room
 
             SceneContainer sceneContainer = new SceneContainer();// paint container
             addRoomObjects(sceneContainer);
-            //createCube(sceneContainer);
 
             sceneContainer.AddChild(new Axies());// paints the x,y and z axis
             arcBallEffect = new ArcBallEffect(sceneControl1.Scene.CurrentCamera as LookAtCamera);// implements rotation per mouse move
@@ -40,110 +39,6 @@ namespace GL_Room
 
             // Hide bounding box
             toolStripButtonShowBoundingVolumes_Click(this, new EventArgs());
-        }
-
-        private void createCube(SceneContainer sceneContainer)
-        {
-            // ==== 1. Polygon ====
-            Vertex[] vertex = new Vertex[4] {
-            new Vertex(0f, 0, 0f),
-            new Vertex(1000f, 0f, 0f),
-            new Vertex(1000f, 0f, 1000f),
-            new Vertex(0f, 0f, 1000f)};
-            Polygon polyFill, polyBorder;
-            createPolygon(vertex, out polyFill, out polyBorder, Materials.Pink(sceneControl1.OpenGL));
-            //polyFill.Way = Way.CCW;
-            //polyBorder.Way = Way.CCW;
-            sceneContainer.AddChild(polyFill);
-            sceneContainer.AddChild(polyBorder);
-
-
-            // ==== 2. Polygon ====
-            vertex = new Vertex[4] {
-            new Vertex(0f, 0, 0f),
-            new Vertex(0f, 1000f, 0f),
-            new Vertex(0f, 1000f, 1000f),
-            new Vertex(0f, 0f, 1000f)};
-            polyFill = new Polygon();
-            polyBorder = new Polygon();
-            createPolygon(vertex, out polyFill, out polyBorder, Materials.Red(sceneControl1.OpenGL));
-            polyFill.Way = Way.CW;
-            polyBorder.Way = Way.CW;
-            sceneContainer.AddChild(polyFill);
-            sceneContainer.AddChild(polyBorder);
-
-            // ==== 3. Polygon ====
-            vertex = new Vertex[4] {
-            new Vertex(0f, 1000f, 0f),
-            new Vertex(1000f, 1000f, 0f),
-            new Vertex(1000f, 1000f, 1000f),
-            new Vertex(0f, 1000f, 1000f)};
-            polyFill = new Polygon();
-            polyBorder = new Polygon();
-            createPolygon(vertex, out polyFill, out polyBorder, Materials.Blue(sceneControl1.OpenGL));
-            polyFill.Way = Way.CW;
-            polyBorder.Way = Way.CW;
-            sceneContainer.AddChild(polyFill);
-            sceneContainer.AddChild(polyBorder);
-
-            // ==== 4. Polygon ====
-            vertex = new Vertex[4] {
-            new Vertex(1000f, 0, 0f),
-            new Vertex(1000f, 0f, 1000f),
-            new Vertex(1000f, 1000f, 1000f),
-            new Vertex(1000f, 1000f, 0f)};
-            polyFill = new Polygon();
-            polyBorder = new Polygon();
-            createPolygon(vertex, out polyFill, out polyBorder, Materials.LightBlue(sceneControl1.OpenGL));
-            polyFill.Way = Way.CW;
-            polyBorder.Way = Way.CW;
-            sceneContainer.AddChild(polyFill);
-            sceneContainer.AddChild(polyBorder);
-
-            // ==== 5. Polygon ====
-            vertex = new Vertex[4] {
-            new Vertex(0f, 0, 1000f),
-            new Vertex(1000f, 0f, 1000f),
-            new Vertex(1000f, 1000f, 1000f),
-            new Vertex(0f, 1000f, 1000f)};
-            polyFill = new Polygon();
-            polyBorder = new Polygon();
-            createPolygon(vertex, out polyFill, out polyBorder, Materials.Green(sceneControl1.OpenGL));
-            //polyFill.Way = Way.CCW;
-            //polyBorder.Way = Way.CCW;
-            sceneContainer.AddChild(polyFill);
-            sceneContainer.AddChild(polyBorder);
-
-            // ==== 6. Polygon ====
-            vertex = new Vertex[4] {
-            new Vertex(0f, 0, 0f),
-            new Vertex(1000f, 0f, 0f),
-            new Vertex(1000f, 1000f, 0f),
-            new Vertex(0f, 1000f, 0f)};
-            polyFill = new Polygon();
-            polyBorder = new Polygon();
-            createPolygon(vertex, out polyFill, out polyBorder, Materials.Yellow(sceneControl1.OpenGL));
-            polyFill.Way = Way.CW;
-            polyBorder.Way = Way.CW;
-            sceneContainer.AddChild(polyFill);
-            sceneContainer.AddChild(polyBorder);
-        }
-
-        private void createPolygon(Vertex[] vertex2, out Polygon polyFill2, out Polygon polyBorder2, Material material)
-        {
-            polyFill2 = new Polygon(this.Name);
-            polyFill2.Material = material;
-            polyFill2.PolygonMode = OpenGL.GL_FILL;
-            polyFill2.PolygonOffset = 0f;
-            polyFill2.AddFaceFromVertexData(vertex2);
-            polyFill2.CullFace = FrontBack.FRONT;
-
-            polyBorder2 = new Polygon(this.Name);
-            polyBorder2.Material = Materials.DarkGrey(sceneControl1.OpenGL);
-            polyBorder2.PolygonMode = OpenGL.GL_LINE;
-            polyBorder2.PolygonOffset = -1f;
-            polyBorder2.AddFaceFromVertexData(vertex2);
-            polyBorder2.CullFace = FrontBack.FRONT;
         }
 
         /// <summary>
@@ -242,46 +137,46 @@ namespace GL_Room
             // ======================
             WallObject window = new WallObject("Window 1");
             // On Wall
-            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1206.38f, 518.49f, -387.11f), new Vertex(-1222.43f, -225.33f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL), -4);
+            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1206.38f, 518.49f, -387.11f), new Vertex(-1222.43f, -225.33f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
             // Not on Wall
-            window.AddPoly(new Vertex[4] { new Vertex(-1322.41f, -223.17f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1306.35f, 520.65f, -387.11f), new Vertex(-1322.41f, -223.17f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL),-1);
+            window.AddPoly(new Vertex[4] { new Vertex(-1322.41f, -223.17f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1306.35f, 520.65f, -387.11f), new Vertex(-1322.41f, -223.17f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
             // Bottom
-            window.AddPoly(new Vertex[4] { new Vertex(-1322.41f, -223.17f, -387.11f), new Vertex(-1222.43f, -225.33f, -387.11f), new Vertex(-1206.38f, 518.49f, -387.11f), new Vertex(-1306.35f, 520.65f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL), -1);
+            window.AddPoly(new Vertex[4] { new Vertex(-1322.41f, -223.17f, -387.11f), new Vertex(-1222.43f, -225.33f, -387.11f), new Vertex(-1206.38f, 518.49f, -387.11f), new Vertex(-1306.35f, 520.65f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
             // Top
-            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1322.41f, -223.17f, 580.89f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL),-1);
+            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1322.41f, -223.17f, 580.89f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
             // Left
-            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, -387.11f), new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1322.41f, -223.17f, 580.89f), new Vertex(-1322.41f, -223.17f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL), -1);
+            window.AddPoly(new Vertex[4] { new Vertex(-1222.43f, -225.33f, -387.11f), new Vertex(-1222.43f, -225.33f, 580.89f), new Vertex(-1322.41f, -223.17f, 580.89f), new Vertex(-1322.41f, -223.17f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
             // Right
-            window.AddPoly(new Vertex[4] { new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1306.35f, 520.65f, -387.11f), new Vertex(-1206.38f, 518.49f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL), -1);
+            window.AddPoly(new Vertex[4] { new Vertex(-1206.38f, 518.49f, 580.89f), new Vertex(-1306.35f, 520.65f, 580.89f), new Vertex(-1306.35f, 520.65f, -387.11f), new Vertex(-1206.38f, 518.49f, -387.11f) }, sceneControl1.OpenGL, Materials.Green(sceneControl1.OpenGL));
 
             WallObject door = new WallObject("Door 1");
             // On Wall
-            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(341.75f, 1361.62f, -1090.11f), new Vertex(-466.03f, 1204.07f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL),-4);
+            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(341.75f, 1361.62f, -1090.11f), new Vertex(-466.03f, 1204.07f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
             // Not on Wall
-            door.AddPoly(new Vertex[4] { new Vertex(-485.17f, 1302.23f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(-485.17f, 1302.23f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
+            door.AddPoly(new Vertex[4] { new Vertex(-485.17f, 1302.23f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(-485.17f, 1302.23f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
             // Bottom
-            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, -1090.11f), new Vertex(341.75f, 1361.62f, -1090.11f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(-485.17f, 1302.23f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
+            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, -1090.11f), new Vertex(341.75f, 1361.62f, -1090.11f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(-485.17f, 1302.23f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
             // Top
-            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(-485.17f, 1302.23f, 959.89f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
+            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(-485.17f, 1302.23f, 959.89f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
             // Left
-            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(-485.17f, 1302.23f, 959.89f), new Vertex(-485.17f, 1302.23f, -1090.11f), new Vertex(-466.03f, 1204.07f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
+            door.AddPoly(new Vertex[4] { new Vertex(-466.03f, 1204.07f, 959.89f), new Vertex(-485.17f, 1302.23f, 959.89f), new Vertex(-485.17f, 1302.23f, -1090.11f), new Vertex(-466.03f, 1204.07f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
             // Right
-            door.AddPoly(new Vertex[4] { new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(341.75f, 1361.62f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL), -1);
+            door.AddPoly(new Vertex[4] { new Vertex(341.75f, 1361.62f, 959.89f), new Vertex(322.61f, 1459.77f, 959.89f), new Vertex(322.61f, 1459.77f, -1090.11f), new Vertex(341.75f, 1361.62f, -1090.11f) }, sceneControl1.OpenGL, Materials.Blue(sceneControl1.OpenGL));
 
 
             WallObject electricalOutlet = new WallObject("Electrical outlet 160x80 1");
             // On Wall
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1225.11f, -349.31f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1225.11f, -349.31f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL),-4);
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1225.11f, -349.31f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1225.11f, -349.31f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
             // Not on Wall
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
             // Bottom
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1063.51f), new Vertex(-1225.11f, -349.31f, 1063.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1208.24f, -123.62f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1063.51f), new Vertex(-1225.11f, -349.31f, 1063.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1208.24f, -123.62f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
             // Top
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1225.11f, -349.31f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1143.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1225.11f, -349.31f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1208.24f, -123.62f, 1143.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
             // Left
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1225.11f, -349.31f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1225.11f, -349.31f, 1143.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1225.11f, -349.31f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1063.51f), new Vertex(-1213.11f, -349.57f, 1143.51f), new Vertex(-1225.11f, -349.31f, 1143.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
             // Right
-            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1208.24f, -123.62f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1208.24f, -123.62f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL), -1);
+            electricalOutlet.AddPoly(new Vertex[4] { new Vertex(-1208.24f, -123.62f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1143.51f), new Vertex(-1220.23f, -123.36f, 1063.51f), new Vertex(-1208.24f, -123.62f, 1063.51f) }, sceneControl1.OpenGL, Materials.Red(sceneControl1.OpenGL));
 
             addElectricalOutletSymbol(electricalOutlet);
 
@@ -305,189 +200,18 @@ namespace GL_Room
 
         private void addElectricalOutletSymbol(WallObject electricalOutlet)
         {
-            electricalOutlet.AddSymbolPoly(
-            new Vertex[90] { new Vertex(-1223.1357650527f, -257.831790155614f, 1103.51400899655f),
-                new Vertex(-1223.13760531186f, -257.91702853364f, 1101.0725324155f),
-                new Vertex(-1223.14311712378f, -258.172328394911f, 1098.64295046295f),
-                new Vertex(-1223.15227363547f, -258.596445944164f, 1096.23709981793f),
-                new Vertex(-1223.16503023732f, -259.187314923332f, 1093.86670154295f),
-                new Vertex(-1223.18132478046f, -259.942056678142f, 1091.54330398015f),
-                new Vertex(-1223.2010778795f, -260.856994182631f, 1089.27822648889f),
-                new Vertex(-1223.22419329933f, -261.927669953247f, 1087.08250429904f),
-                new Vertex(-1223.25055842396f, -263.148867765258f, 1084.96683474839f),
-                new Vertex(-1223.28004480514f, -264.514638065679f, 1082.94152516631f),
-                new Vertex(-1223.31250878819f, -266.018326958894f, 1081.01644265752f),
-                new Vertex(-1223.34779221184f, -267.652608623764f, 1079.20096603048f),
-                new Vertex(-1223.38572317881f, -269.409521004297f, 1077.50394010484f),
-                new Vertex(-1223.42611689323f, -271.280504599977f, 1075.93363262031f),
-                new Vertex(-1223.468776561f, -273.256444166799f, 1074.49769395712f),
-                new Vertex(-1223.51349434848f, -275.327713125812f, 1073.20311986409f),
-                new Vertex(-1223.56005239513f, -277.484220462852f, 1072.05621737608f),
-                new Vertex(-1223.60822387481f, -279.715459890944f, 1071.06257408671f),
-                new Vertex(-1223.65777410093f, -282.010561035877f, 1070.22703092622f),
-                new Vertex(-1223.70846166975f, -284.358342395578f, 1069.55365857689f),
-                new Vertex(-1223.76003963654f, -286.747365815258f, 1069.04573764112f),
-                new Vertex(-1223.81225671863f, -289.165992212962f, 1068.70574265866f),
-                new Vertex(-1223.86485851964f, -291.602438283998f, 1068.53533005088f),
-                new Vertex(-1223.9175887689f, -294.044833908021f, 1068.53533005088f),
-                new Vertex(-1223.97019056991f, -296.481279979058f, 1068.70574265866f),
-                new Vertex(-1224.022407652f, -298.899906376762f, 1069.04573764112f),
-                new Vertex(-1224.07398561879f, -301.288929796442f, 1069.55365857689f),
-                new Vertex(-1224.12467318761f, -303.636711156142f, 1070.22703092622f),
-                new Vertex(-1224.17422341373f, -305.931812301076f, 1071.06257408671f),
-                new Vertex(-1224.22239489341f, -308.163051729168f, 1072.05621737608f),
-                new Vertex(-1224.26895294006f, -310.319559066208f, 1073.20311986409f),
-                new Vertex(-1224.31367072754f, -312.390828025221f, 1074.49769395712f),
-                new Vertex(-1224.35633039531f, -314.366767592042f, 1075.93363262031f),
-                new Vertex(-1224.39672410973f, -316.237751187723f, 1077.50394010484f),
-                new Vertex(-1224.4346550767f, -317.994663568255f, 1079.20096603048f),
-                new Vertex(-1224.46993850035f, -319.628945233126f, 1081.01644265752f),
-                new Vertex(-1224.5024024834f, -321.13263412634f, 1082.94152516631f),
-                new Vertex(-1224.53188886458f, -322.498404426762f, 1084.96683474839f),
-                new Vertex(-1224.55825398921f, -323.719602238773f, 1087.08250429904f),
-                new Vertex(-1224.58136940904f, -324.790278009388f, 1089.27822648889f),
-                new Vertex(-1224.60112250808f, -325.705215513877f, 1091.54330398015f),
-                new Vertex(-1224.61741705122f, -326.459957268687f, 1093.86670154295f),
-                new Vertex(-1224.63017365307f, -327.050826247855f, 1096.23709981793f),
-                new Vertex(-1224.63933016476f, -327.474943797108f, 1098.64295046295f),
-                new Vertex(-1224.64484197668f, -327.730243658379f, 1101.0725324155f),
-                new Vertex(-1224.64668223584f, -327.815482036406f, 1103.51400899655f),
-                new Vertex(-1224.64484197668f, -327.730243658379f, 1105.95548557759f),
-                new Vertex(-1224.63933016476f, -327.474943797108f, 1108.38506753015f),
-                new Vertex(-1224.63017365307f, -327.050826247855f, 1110.79091817517f),
-                new Vertex(-1224.61741705122f, -326.459957268687f, 1113.16131645014f),
-                new Vertex(-1224.60112250808f, -325.705215513877f, 1115.48471401295f),
-                new Vertex(-1224.58136940904f, -324.790278009388f, 1117.7497915042f),
-                new Vertex(-1224.55825398921f, -323.719602238773f, 1119.94551369405f),
+            Circle circle1 = new Circle(
                 new Vertex(-1224.53188886458f, -322.498404426762f, 1122.06118324471f),
-                new Vertex(-1224.5024024834f, -321.13263412634f, 1124.08649282678f),
-                new Vertex(-1224.46993850035f, -319.628945233126f, 1126.01157533558f),
-                new Vertex(-1224.4346550767f, -317.994663568255f, 1127.82705196261f),
-                new Vertex(-1224.39672410973f, -316.237751187723f, 1129.52407788826f),
-                new Vertex(-1224.35633039531f, -314.366767592042f, 1131.09438537278f),
-                new Vertex(-1224.31367072754f, -312.390828025221f, 1132.53032403597f),
-                new Vertex(-1224.26895294006f, -310.319559066208f, 1133.824898129f),
-                new Vertex(-1224.22239489341f, -308.163051729168f, 1134.97180061702f),
-                new Vertex(-1224.17422341373f, -305.931812301076f, 1135.96544390639f),
-                new Vertex(-1224.12467318761f, -303.636711156142f, 1136.80098706688f),
-                new Vertex(-1224.07398561879f, -301.288929796442f, 1137.47435941621f),
-                new Vertex(-1224.022407652f, -298.899906376762f, 1137.98228035197f),
-                new Vertex(-1223.97019056991f, -296.481279979058f, 1138.32227533444f),
-                new Vertex(-1223.9175887689f, -294.044833908021f, 1138.49268794222f),
                 new Vertex(-1223.86485851964f, -291.602438283998f, 1138.49268794222f),
-                new Vertex(-1223.81225671863f, -289.165992212962f, 1138.32227533444f),
-                new Vertex(-1223.76003963654f, -286.747365815258f, 1137.98228035197f),
-                new Vertex(-1223.70846166975f, -284.358342395578f, 1137.47435941621f),
-                new Vertex(-1223.65777410093f, -282.010561035877f, 1136.80098706688f),
-                new Vertex(-1223.60822387481f, -279.715459890944f, 1135.96544390639f),
-                new Vertex(-1223.56005239513f, -277.484220462852f, 1134.97180061702f),
-                new Vertex(-1223.51349434848f, -275.327713125812f, 1133.824898129f),
-                new Vertex(-1223.468776561f, -273.256444166799f, 1132.53032403597f),
-                new Vertex(-1223.42611689323f, -271.280504599977f, 1131.09438537278f),
-                new Vertex(-1223.38572317881f, -269.409521004297f, 1129.52407788826f),
-                new Vertex(-1223.34779221184f, -267.652608623764f, 1127.82705196261f),
-                new Vertex(-1223.31250878819f, -266.018326958894f, 1126.01157533558f),
-                new Vertex(-1223.28004480514f, -264.514638065679f, 1124.08649282678f),
-                new Vertex(-1223.25055842396f, -263.148867765258f, 1122.06118324471f),
-                new Vertex(-1223.22419329933f, -261.927669953247f, 1119.94551369405f),
-                new Vertex(-1223.2010778795f, -260.856994182631f, 1117.7497915042f),
-                new Vertex(-1223.18132478046f, -259.942056678142f, 1115.48471401295f),
-                new Vertex(-1223.16503023732f, -259.187314923332f, 1113.16131645014f),
-                new Vertex(-1223.15227363547f, -258.596445944164f, 1110.79091817517f),
-                new Vertex(-1223.14311712378f, -258.172328394911f, 1108.38506753015f),
-                new Vertex(-1223.13760531186f, -257.91702853364f, 1105.95548557759f)}, sceneControl1.OpenGL);
+                new Vertex(-1223.25055842396f, -263.148867765258f, 1122.06118324471f));
 
-            electricalOutlet.AddSymbolPoly(
-            new Vertex[90] { new Vertex(-1220.69671302847f, -144.858116119478f, 1103.51400899655f),
-                new Vertex(-1220.69855328763f, -144.943354497504f, 1101.0725324155f),
-                new Vertex(-1220.70406509955f, -145.198654358775f, 1098.64295046295f),
-                new Vertex(-1220.71322161124f, -145.622771908028f, 1096.23709981793f),
-                new Vertex(-1220.7259782131f, -146.213640887196f, 1093.86670154295f),
-                new Vertex(-1220.74227275623f, -146.968382642006f, 1091.54330398015f),
-                new Vertex(-1220.76202585527f, -147.883320146495f, 1089.27822648889f),
-                new Vertex(-1220.78514127511f, -148.95399591711f, 1087.08250429904f),
-                new Vertex(-1220.81150639973f, -150.175193729122f, 1084.96683474839f),
-                new Vertex(-1220.84099278091f, -151.540964029543f, 1082.94152516631f),
-                new Vertex(-1220.87345676396f, -153.044652922758f, 1081.01644265752f),
-                new Vertex(-1220.90874018762f, -154.678934587628f, 1079.20096603048f),
-                new Vertex(-1220.94667115458f, -156.435846968161f, 1077.50394010484f),
-                new Vertex(-1220.98706486901f, -158.306830563841f, 1075.93363262031f),
-                new Vertex(-1221.02972453677f, -160.282770130662f, 1074.49769395712f),
-                new Vertex(-1221.07444232426f, -162.354039089676f, 1073.20311986409f),
-                new Vertex(-1221.1210003709f, -164.510546426715f, 1072.05621737608f),
-                new Vertex(-1221.16917185059f, -166.741785854807f, 1071.06257408671f),
-                new Vertex(-1221.2187220767f, -169.036886999741f, 1070.22703092622f),
-                new Vertex(-1221.26940964552f, -171.384668359441f, 1069.55365857689f),
-                new Vertex(-1221.32098761231f, -173.773691779122f, 1069.04573764112f),
-                new Vertex(-1221.3732046944f, -176.192318176826f, 1068.70574265866f),
-                new Vertex(-1221.42580649542f, -178.628764247862f, 1068.53533005088f),
-                new Vertex(-1221.47853674467f, -181.071159871885f, 1068.53533005088f),
-                new Vertex(-1221.53113854568f, -183.507605942922f, 1068.70574265866f),
-                new Vertex(-1221.58335562777f, -185.926232340625f, 1069.04573764112f),
-                new Vertex(-1221.63493359456f, -188.315255760306f, 1069.55365857689f),
-                new Vertex(-1221.68562116339f, -190.663037120006f, 1070.22703092622f),
-                new Vertex(-1221.7351713895f, -192.95813826494f, 1071.06257408671f),
-                new Vertex(-1221.78334286918f, -195.189377693032f, 1072.05621737608f),
-                new Vertex(-1221.82990091583f, -197.345885030072f, 1073.20311986409f),
-                new Vertex(-1221.87461870332f, -199.417153989085f, 1074.49769395712f),
-                new Vertex(-1221.91727837108f, -201.393093555906f, 1075.93363262031f),
-                new Vertex(-1221.9576720855f, -203.264077151587f, 1077.50394010484f),
-                new Vertex(-1221.99560305247f, -205.020989532119f, 1079.20096603048f),
-                new Vertex(-1222.03088647613f, -206.655271196989f, 1081.01644265752f),
-                new Vertex(-1222.06335045917f, -208.158960090204f, 1082.94152516631f),
-                new Vertex(-1222.09283684035f, -209.524730390626f, 1084.96683474839f),
-                new Vertex(-1222.11920196498f, -210.745928202637f, 1087.08250429904f),
-                new Vertex(-1222.14231738481f, -211.816603973252f, 1089.27822648889f),
-                new Vertex(-1222.16207048386f, -212.731541477741f, 1091.54330398015f),
-                new Vertex(-1222.17836502699f, -213.486283232551f, 1093.86670154295f),
-                new Vertex(-1222.19112162885f, -214.077152211719f, 1096.23709981793f),
+            Circle circle2 = new Circle(
                 new Vertex(-1222.20027814054f, -214.501269760972f, 1098.64295046295f),
-                new Vertex(-1222.20578995246f, -214.756569622243f, 1101.0725324155f),
-                new Vertex(-1222.20763021162f, -214.84180800027f, 1103.51400899655f),
-                new Vertex(-1222.20578995246f, -214.756569622243f, 1105.95548557759f),
-                new Vertex(-1222.20027814054f, -214.501269760972f, 1108.38506753015f),
-                new Vertex(-1222.19112162885f, -214.077152211719f, 1110.79091817517f),
-                new Vertex(-1222.17836502699f, -213.486283232551f, 1113.16131645014f),
-                new Vertex(-1222.16207048386f, -212.731541477741f, 1115.48471401295f),
-                new Vertex(-1222.14231738481f, -211.816603973252f, 1117.7497915042f),
-                new Vertex(-1222.11920196498f, -210.745928202637f, 1119.94551369405f),
-                new Vertex(-1222.09283684035f, -209.524730390626f, 1122.06118324471f),
-                new Vertex(-1222.06335045917f, -208.158960090204f, 1124.08649282678f),
-                new Vertex(-1222.03088647613f, -206.655271196989f, 1126.01157533558f),
-                new Vertex(-1221.99560305247f, -205.020989532119f, 1127.82705196261f),
-                new Vertex(-1221.9576720855f, -203.264077151587f, 1129.52407788826f),
-                new Vertex(-1221.91727837108f, -201.393093555906f, 1131.09438537278f),
-                new Vertex(-1221.87461870332f, -199.417153989085f, 1132.53032403597f),
-                new Vertex(-1221.82990091583f, -197.345885030072f, 1133.824898129f),
-                new Vertex(-1221.78334286918f, -195.189377693032f, 1134.97180061702f),
-                new Vertex(-1221.7351713895f, -192.95813826494f, 1135.96544390639f),
-                new Vertex(-1221.68562116339f, -190.663037120006f, 1136.80098706688f),
-                new Vertex(-1221.63493359456f, -188.315255760306f, 1137.47435941621f),
-                new Vertex(-1221.58335562777f, -185.926232340625f, 1137.98228035197f),
-                new Vertex(-1221.53113854568f, -183.507605942922f, 1138.32227533444f),
-                new Vertex(-1221.47853674467f, -181.071159871885f, 1138.49268794222f),
-                new Vertex(-1221.42580649542f, -178.628764247862f, 1138.49268794222f),
-                new Vertex(-1221.3732046944f, -176.192318176826f, 1138.32227533444f),
                 new Vertex(-1221.32098761231f, -173.773691779122f, 1137.98228035197f),
-                new Vertex(-1221.26940964552f, -171.384668359441f, 1137.47435941621f),
-                new Vertex(-1221.2187220767f, -169.036886999741f, 1136.80098706688f),
-                new Vertex(-1221.16917185059f, -166.741785854807f, 1135.96544390639f),
-                new Vertex(-1221.1210003709f, -164.510546426715f, 1134.97180061702f),
-                new Vertex(-1221.07444232426f, -162.354039089676f, 1133.824898129f),
-                new Vertex(-1221.02972453677f, -160.282770130662f, 1132.53032403597f),
-                new Vertex(-1220.98706486901f, -158.306830563841f, 1131.09438537278f),
-                new Vertex(-1220.94667115458f, -156.435846968161f, 1129.52407788826f),
-                new Vertex(-1220.90874018762f, -154.678934587628f, 1127.82705196261f),
-                new Vertex(-1220.87345676396f, -153.044652922758f, 1126.01157533558f),
-                new Vertex(-1220.84099278091f, -151.540964029543f, 1124.08649282678f),
-                new Vertex(-1220.81150639973f, -150.175193729122f, 1122.06118324471f),
-                new Vertex(-1220.78514127511f, -148.95399591711f, 1119.94551369405f),
-                new Vertex(-1220.76202585527f, -147.883320146495f, 1117.7497915042f),
-                new Vertex(-1220.74227275623f, -146.968382642006f, 1115.48471401295f),
-                new Vertex(-1220.7259782131f, -146.213640887196f, 1113.16131645014f),
-                new Vertex(-1220.71322161124f, -145.622771908028f, 1110.79091817517f),
-                new Vertex(-1220.70406509955f, -145.198654358775f, 1108.38506753015f),
-                new Vertex(-1220.69855328763f, -144.943354497504f, 1105.95548557759f)}, sceneControl1.OpenGL);
+                new Vertex(-1220.69855328763f, -144.943354497504f, 1105.95548557759f));
+
+            electricalOutlet.AddSymbol(circle1, sceneControl1.OpenGL);
+            electricalOutlet.AddSymbol(circle2, sceneControl1.OpenGL);
         }
 
         void sceneControl1_MouseUp(object sender, MouseEventArgs e)
@@ -505,7 +229,7 @@ namespace GL_Room
 
         void FormSceneSample_MouseDown(object sender, MouseEventArgs e)
         {
-            arcBallEffect.ArcBall.MouseDown(e.X, e.Y);
+            arcBallEffect.ArcBall.MouseDown(e.X, e.Y, sceneControl1.OpenGL);
         }
 
         private void FormSceneSample_MouseWheel(object sender, MouseEventArgs e)

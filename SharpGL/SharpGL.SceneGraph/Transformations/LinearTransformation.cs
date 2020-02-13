@@ -31,54 +31,6 @@ namespace SharpGL.SceneGraph.Transformations
     public class LinearTransformation : Transformation, IDeepCloneable<LinearTransformation>
     {
         /// <summary>
-        /// Performs the transformation on the current matrix.
-        /// </summary>
-        /// <param name="gl">The OpenGL instance.</param>
-        public override void Transform(OpenGL gl)
-        {
-            //  Perform the transformation in the specified order.
-            switch (transformationOrder)
-            {
-                case LinearTransformationOrder.TranslateRotateScale:
-                    gl.Translate(translateX, translateY, translateZ);
-                    gl.Rotate(rotateX, rotateY, rotateZ);
-                    gl.Scale(scaleX, scaleY, scaleZ);
-                    break;
-                case LinearTransformationOrder.RotateTranslateScale:
-                    gl.Rotate(rotateX, rotateY, rotateZ);
-                    gl.Translate(translateX, translateY, translateZ);
-                    gl.Scale(scaleX, scaleY, scaleZ);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Creates a new object that is a copy of the current instance.
-        /// </summary>
-        /// <returns>
-        /// A new object that is a copy of this instance.
-        /// </returns>
-        public LinearTransformation DeepClone()
-        {
-            //  Clone the object.
-            return new LinearTransformation()
-            {
-                translateX = this.translateX,
-                translateY = this.translateY,
-                translateZ = this.translateZ,
-                rotateX = this.rotateX,
-                rotateY = this.rotateY,
-                rotateZ = this.rotateZ,
-                scaleX = this.scaleX,
-                scaleY = this.scaleY,
-                scaleZ = this.scaleZ,
-                transformationOrder = this.transformationOrder
-            };
-        }
-
-        /// <summary>
         /// X Component of the Translation.
         /// </summary>
         private float translateX = 0;
@@ -126,6 +78,53 @@ namespace SharpGL.SceneGraph.Transformations
         /// The order of the linear transformation.
         /// </summary>
         private LinearTransformationOrder transformationOrder = LinearTransformationOrder.TranslateRotateScale;
+
+        /// <summary>
+        /// Performs the transformation on the current matrix.
+        /// </summary>
+        public override void Transform(OpenGL gl)
+        {
+            //  Perform the transformation in the specified order.
+            switch (transformationOrder)
+            {
+                case LinearTransformationOrder.TranslateRotateScale:
+                    gl.Translate(translateX, translateY, translateZ);
+                    gl.Rotate(rotateX, rotateY, rotateZ);
+                    gl.Scale(scaleX, scaleY, scaleZ);
+                    break;
+                case LinearTransformationOrder.RotateTranslateScale:
+                    gl.Rotate(rotateX, rotateY, rotateZ);
+                    gl.Translate(translateX, translateY, translateZ);
+                    gl.Scale(scaleX, scaleY, scaleZ);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>
+        /// A new object that is a copy of this instance.
+        /// </returns>
+        public LinearTransformation DeepClone()
+        {
+            //  Clone the object.
+            return new LinearTransformation()
+            {
+                translateX = this.translateX,
+                translateY = this.translateY,
+                translateZ = this.translateZ,
+                rotateX = this.rotateX,
+                rotateY = this.rotateY,
+                rotateZ = this.rotateZ,
+                scaleX = this.scaleX,
+                scaleY = this.scaleY,
+                scaleZ = this.scaleZ,
+                transformationOrder = this.transformationOrder
+            };
+        }
 
         /// <summary>
         /// Gets the translation vertex.

@@ -11,6 +11,10 @@ namespace SharpGL.SceneGraph.Core
     /// Generally this means compiling the object's geometry into
     /// a display list.
     /// </summary>
+    /// <remarks>
+    /// See PolygonLoadingSample\FormPolygonLoadingSample
+    /// in Sample code of SharpGL.
+    /// </remarks>
     public interface IFreezable
     {
         /// <summary>

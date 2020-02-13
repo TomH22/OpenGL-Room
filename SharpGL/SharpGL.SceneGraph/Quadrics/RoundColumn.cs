@@ -7,10 +7,12 @@ using System.Xml.Serialization;
 using SharpGL.SceneGraph.Transformations;
 using SharpGL.SceneGraph.Primitives;
 using SharpGL.Enumerations;
+using SharpGL.OpenGLAttributes;
+using SharpGL.SceneGraph.Effects;
 
 namespace SharpGL.SceneGraph.Quadrics
 {
-    public class RoundColumn:RoomObject, IRenderable, IVolumeBound
+    public class RoundColumn:RoomObject, IVolumeBound
     {
         private DisplayList displayList;
 
@@ -39,11 +41,25 @@ namespace SharpGL.SceneGraph.Quadrics
             secondPoint.Z = bottomPoint;
             endPoint.Z = bottomPoint;
 
+
+            DepthBufferAttributes depthBufferAttributes = new DepthBufferAttributes();
+            depthBufferAttributes.DepthFunction = DepthFunction.LessThanOrEqual;
+            depthBufferAttributes.EnableDepthTest = true;
+
+            PolygonAttributes polygonAttributes = new PolygonAttributes();
+            polygonAttributes.PolygonMode = PolygonMode.Lines;
+
+            polygonAttributes.EnableOffsetLine = true;
+            polygonAttributes.OffsetFactor = -.9f;
+            polygonAttributes.OffsetBias = -.9f;
+
+            OpenGLAttributesEffect openGLAttributesEffect = new OpenGLAttributesEffect();
+            openGLAttributesEffect.PolygonAttributes = polygonAttributes;
+            //openGLAttributesEffect.DepthBufferAttributes = depthBufferAttributes;
+
             Circle bottomCircle = new Circle(new Vertex(startPoint), new Vertex(secondPoint), new Vertex(endPoint));
             bottomCircle.Material = Materials.DarkGrey(gl);
-            bottomCircle.Offset = -1;
-            bottomCircle.LineMode = OpenGL.GL_LINE;
-            bottomCircle.DepthFunc = DepthFunc.LESS;
+            bottomCircle.AddEffect(openGLAttributesEffect);
             AddChild(bottomCircle);
 
             // ==== Create top circle of column ====
@@ -53,9 +69,7 @@ namespace SharpGL.SceneGraph.Quadrics
 
             Circle topCircle = new Circle(new Vertex(startPoint), new Vertex(secondPoint), new Vertex(endPoint));
             topCircle.Material = Materials.DarkGrey(gl);
-            topCircle.Offset = -1;
-            topCircle.LineMode = OpenGL.GL_LINE;
-            topCircle.DepthFunc = DepthFunc.LESS;
+            topCircle.AddEffect(openGLAttributesEffect);
             AddChild(topCircle);
 
             // ==== Create column body ====
@@ -92,7 +106,7 @@ namespace SharpGL.SceneGraph.Quadrics
         /// <summary>
         /// Render to the provided instance of OpenGL.
         /// </summary>
-        public void Render(OpenGL gl, RenderMode renderMode)
+        public override void Render(OpenGL gl, RenderMode renderMode)
         {
             displayList.Call(gl);
         }
@@ -101,7 +115,6 @@ namespace SharpGL.SceneGraph.Quadrics
         {
             get
             {
-                //  todo; only create bv when vertices changed.
                 boundingVolumeHelper.BoundingVolume.FromCylindricalVolume(new Vertex(circle.Center.X, circle.Center.Y, bottomPoint), (topPoint-bottomPoint), circle.Radius, circle.Radius);
                 boundingVolumeHelper.BoundingVolume.Pad(0.1f);
                 return boundingVolumeHelper.BoundingVolume;

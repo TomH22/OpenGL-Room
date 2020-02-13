@@ -6,7 +6,9 @@ using SharpGL.SceneGraph.Assets;
 using System.Xml.Serialization;
 using SharpGL.SceneGraph.Transformations;
 using SharpGL.SceneGraph.Primitives;
-
+using SharpGL.Enumerations;
+using SharpGL.OpenGLAttributes;
+using SharpGL.SceneGraph.Effects;
 
 namespace SharpGL.SceneGraph.Quadrics
 {
@@ -31,36 +33,69 @@ namespace SharpGL.SceneGraph.Quadrics
             Name = name;
         }
 
-        public void AddPoly(Vertex[] vertex1, OpenGL gl, Material material, float polygonOffset)
+        public void AddPoly(Vertex[] vertex1, OpenGL gl, Material material)
         {
-            SharpGL.SceneGraph.Primitives.Polygon polyFill = new Polygon(this.Name);
-            polyFill.Material = material;
-            polyFill.PolygonMode = OpenGL.GL_FILL;
-            polyFill.PolygonOffset = 0f;
-            polyFill.PolygonOffsetFill = true;
-            polyFill.AddFaceFromVertexData(vertex1);
-            //polyFill.DepthFunc = DepthFunc.ALAYS;
-            this.Children.Add(polyFill);
+            DepthBufferAttributes depthBufferAttributes = new DepthBufferAttributes();
+            depthBufferAttributes.DepthFunction = DepthFunction.LessThanOrEqual;
+            depthBufferAttributes.EnableDepthTest = true;
 
-            SharpGL.SceneGraph.Primitives.Polygon polyBorder = new Polygon(this.Name);
+            // ==== Fill polygon ====
+            PolygonAttributes polygonFillAttributes = new PolygonAttributes();
+            polygonFillAttributes.PolygonMode = PolygonMode.Filled;
+
+            polygonFillAttributes.OffsetFactor = -.5f;
+            polygonFillAttributes.OffsetBias = -.5f;
+            polygonFillAttributes.EnableOffsetFill = true;
+
+            OpenGLAttributesEffect polyFillEffect = new OpenGLAttributesEffect();
+            polyFillEffect.PolygonAttributes = polygonFillAttributes;
+            //polyFillEffect.DepthBufferAttributes = depthBufferAttributes;
+
+            SharpGL.SceneGraph.Primitives.Polygon polyFill = new Polygon(this.Name, vertex1);
+            polyFill.Material = material;
+            polyFill.AddEffect(polyFillEffect);
+            Children.Add(polyFill);
+
+            // ==== Border polygon ====
+            PolygonAttributes polygonBorderAttributes = new PolygonAttributes();
+            polygonBorderAttributes.PolygonMode = PolygonMode.Lines;
+
+            polygonBorderAttributes.EnableOffsetLine = true;
+            polygonBorderAttributes.OffsetFactor = -.9f;
+            polygonBorderAttributes.OffsetBias = -.9f;
+
+            OpenGLAttributesEffect polyBorderEffect = new OpenGLAttributesEffect();
+            polyBorderEffect.PolygonAttributes = polygonBorderAttributes;
+            //polyBorderEffect.DepthBufferAttributes = depthBufferAttributes;
+
+            SharpGL.SceneGraph.Primitives.Polygon polyBorder = new Polygon(this.Name, vertex1);
             polyBorder.Material = Materials.DarkGrey(gl);
-            polyBorder.PolygonMode = OpenGL.GL_LINE;
-            polyBorder.PolygonOffset = polygonOffset;
-            polyBorder.AddFaceFromVertexData(vertex1);
-            //polyBorder.DepthFunc = DepthFunc.ALAYS;
-            this.Children.Add(polyBorder);
+            polyBorder.AddEffect(polyBorderEffect);
+            Children.Add(polyBorder);
 
             this.polyOnWall = polyFill;
         }
 
-        public void AddSymbolPoly(Vertex[] vertex1, OpenGL gl)
+        public void AddSymbol(Circle circle, OpenGL gl)
         {
-            SharpGL.SceneGraph.Primitives.Polygon polyBorder = new Polygon(this.Name);
-            polyBorder.Material = Materials.DarkGrey(gl);
-            polyBorder.PolygonMode = OpenGL.GL_LINE;
-            polyBorder.PolygonOffset = -6f;
-            polyBorder.AddFaceFromVertexData(vertex1);
-            this.Children.Add(polyBorder);
+            DepthBufferAttributes depthBufferAttributes = new DepthBufferAttributes();
+            depthBufferAttributes.DepthFunction = DepthFunction.LessThanOrEqual;
+            depthBufferAttributes.EnableDepthTest = true;
+
+            PolygonAttributes polygonBorderAttributes = new PolygonAttributes();
+            polygonBorderAttributes.PolygonMode = PolygonMode.Lines;
+
+            polygonBorderAttributes.EnableOffsetLine = true;
+            polygonBorderAttributes.OffsetFactor = -3f;
+            polygonBorderAttributes.OffsetBias = -3f;
+
+            OpenGLAttributesEffect polyBorderEffect = new OpenGLAttributesEffect();
+            polyBorderEffect.PolygonAttributes = polygonBorderAttributes;
+            polyBorderEffect.DepthBufferAttributes = depthBufferAttributes;
+
+            circle.Material = Materials.DarkGrey(gl);
+            circle.AddEffect(polyBorderEffect);
+            this.Children.Add(circle);
         }
 
         /// <summary>

@@ -8,10 +8,14 @@ namespace SharpGL.SceneGraph.Helpers
 {
     public class FreezableHelper
     {
+        public FreezableHelper()
+        {
+
+        }
+
         /// <summary>
         /// Freezes the specified instance.
         /// </summary>
-        /// <param name="gl">The gl instance.</param>
         /// <param name="renderable">The renderable.</param>
         public void Freeze(OpenGL gl, IRenderable renderable)
         {

@@ -19,7 +19,7 @@ namespace SharpGL.SceneGraph.Primitives
     {
         private Vertex secondPoint;
 
-        // Specifies the plane normal of the arc.
+        // the normal on the arc plane
         protected Vertex normal;
 
         protected Vertex span1;
@@ -40,37 +40,35 @@ namespace SharpGL.SceneGraph.Primitives
         }
 
         /// <summary>
-        /// Calculates the circle, which is defined either by 3 points or by center point, radius and plane.
+        /// Calculates the circle, which is defined by 3 points.
         /// </summary>
         public void calcData()
         {
-            // 0. Check whether the 3 points are in a row or not.
+            // Check whether the 3 points are in a row or not.
             if (areOnLine(startPoint, secondPoint, endPoint))
                 throw new Exception("The points result in no circle");
 
-            // 1. Calculation of the center of the circle.
-            // 1.1.a) Direction vector from point b to a
+            // direction vector from point b to a
             Vertex ba = startPoint - secondPoint;
-            // 1.1.b) Direction vector from point b to c
+
+            // direction vector from point b to c
             Vertex bc = endPoint - secondPoint;
 
-            // 1.2. Perpendicular to the plane of the triangle / circle.
-            ba.Normalize(); bc.Normalize();  //  Max: For very small radii, the vector is recognized as 0 after the cross product, i.e. normalize vectors beforehand
+            // Perpendicular to the plane of the triangle / circle.
+            ba.Normalize(); bc.Normalize();
             this.normal = ba.VectorProduct(bc);
             this.normal.Normalize();
 
-            // 1.3. Calculation of the center of the circle
+            // Calculation of the center of the circle
             this.center = getCenter();
-            // 2. Calculation of the radius
+
+            // Calculation of the radius
             this.radius = (float)(center - startPoint).Magnitude();
 
 
-            // 3. Draw the circle and thus the arc.
-            // 3.1. Determination of 2 clamping vectors (ellipses have different lengths)
+            // Determination of 2 clamping vectors.
             this.span1 = startPoint - center;
             this.span2 = span1.VectorProduct(this.normal);
-
-            //this.CalcBoundingBox();
         }
 
         public Vertex SecondPoint
@@ -94,7 +92,7 @@ namespace SharpGL.SceneGraph.Primitives
         }
 
         /// <summary>
-        /// This auxiliary method checks whether 3 points in plane-dimensional space, described by vectors, lie on a straight line.
+        /// This auxiliary method checks whether 3 points in plane-dimensional space lie on a straight line.
         /// </summary>
         private static bool areOnLine(Vertex a, Vertex b, Vertex c)
         {
@@ -134,14 +132,14 @@ namespace SharpGL.SceneGraph.Primitives
             Vertex b = secondPoint;
             Vertex c = endPoint;
 
-            Vertex normal = (a - b).VectorProduct(c - b);   // Normalenvektor der Ebene
+            Vertex normal = (a - b).VectorProduct(c - b); // Normal vector of the plane
             normal.Normalize();
 
-            Vertex Mba = 0.5f * (a + b);    // Mittelpunkt von ba
-            Vertex Mbc = 0.5f * (c + b);    // Mittelpunkt von bc
+            Vertex Mba = 0.5f * (a + b); // mid point of ba
+            Vertex Mbc = 0.5f * (c + b); // mid point bc
 
-            Vertex dirMba = (b - a).VectorProduct(normal);  // Richtungsvektor der 1. Geraden
-            Vertex dirMbc = (c - b).VectorProduct(normal);  // Richtungsvektor der 2. Geraden
+            Vertex dirMba = (b - a).VectorProduct(normal); // direction vector of the 1st straight line
+            Vertex dirMbc = (c - b).VectorProduct(normal); // direction vector of the 2st straight line
 
             Vertex? v = new Line(Mba, Mba + dirMba).GetIntersection(new Line(Mbc, Mbc + dirMbc));
             if (v != null)
@@ -163,5 +161,11 @@ namespace SharpGL.SceneGraph.Primitives
 
             return alpha;
         }
+
+        public override string ToString()
+        {
+            return "start point: "+startPoint.ToString() + System.Environment.NewLine+"second point: " + secondPoint.ToString() + System.Environment.NewLine+"end point: " + endPoint.ToString();
+        }
+
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using SharpGL.SceneGraph.Core;
 using SharpGL.SceneGraph.Lighting;
+using SharpGL.SceneGraph.Feedback;
 
 namespace SharpGL.SceneGraph.Core
 {
@@ -45,12 +46,31 @@ namespace SharpGL.SceneGraph.Core
             gl.MultMatrix(transformMatrix.AsColumnMajorArray);
         }
 
-        public void MouseDown(int x, int y)
+        public void MouseDown(int x, int y, OpenGL gl)
         {
             this.mouseIsDown = true;
 
             this.mouseDownX = x;
             this.mouseDownY = y;
+
+            //float winZ;
+            //int[] viewport = new int[4];
+            //byte[] pixels = new byte[1024];
+            //gl.GetInteger(OpenGL.GL_VIEWPORT, viewport);
+            //gl.ReadPixels(x, (viewport[3] - y), 10, 10, OpenGL.GL_DEPTH_COMPONENT, OpenGL.GL_BYTE, pixels);
+
+            //float[] projection = new float[16];
+            //gl.GetFloat(OpenGL.GL_PROJECTION_MATRIX, projection);
+
+
+            ////gl.UnProject(x, (viewport[3] - y), pixels[0], projection, viewport)
+
+            //double[] coord = gl.UnProject(x, (viewport[3] - y), 0f);
+            //Vertex vertex = new Vertex((float)coord[0]*4000, (float)coord[1]*4000, (float)coord[2]);
+            //vertex = transformMatrix* vertex ;
+            //vertex = scaleMatrix*vertex ;
+            
+            //Console.WriteLine(vertex);
         }
 
         public void MouseMove(int x, int y)

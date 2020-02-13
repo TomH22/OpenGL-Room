@@ -62,6 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\IHasMaterial.cs" />
+    <Compile Include="Core\RenderElement.cs" />
     <Compile Include="IDeepClonable.cs" />
     <Compile Include="NETDesignSurface.cs" />
     <Compile Include="OpenGLAttributes\AccumBufferAttributes.cs" />

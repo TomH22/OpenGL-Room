@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 
 namespace SharpGL.SceneGraph.Primitives
 {
+    // maybe change parent to RenderElement
     public class Point : SceneElement, IRenderable
     {
         public Vertex Vertex;
@@ -19,8 +20,6 @@ namespace SharpGL.SceneGraph.Primitives
         /// <summary>
         /// Render to the provided instance of OpenGL.
         /// </summary>
-        /// <param name="gl">The OpenGL instance.</param>
-        /// <param name="renderMode">The render mode.</param>
         public void Render(OpenGL gl, RenderMode renderMode)
         {
             //  Design time primitives render only in design mode.

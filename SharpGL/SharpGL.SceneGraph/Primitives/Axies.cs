@@ -1,9 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
+using SharpGL.SceneGraph.Collections;
 using SharpGL.SceneGraph.Core;
+using SharpGL.SceneGraph.Lighting;
+using SharpGL.SceneGraph.Raytracing;
+using SharpGL.SceneGraph.Helpers;
 using System.Xml.Serialization;
+using SharpGL.SceneGraph.Transformations;
+using SharpGL.SceneGraph.Assets;
+using System.Text;
+using SharpGL.Enumerations;
 
 namespace SharpGL.SceneGraph.Primitives
 {
@@ -15,48 +24,15 @@ namespace SharpGL.SceneGraph.Primitives
     /// Y - Green
     /// Z - Blue
     /// </summary>
-    public class Axies : SceneElement, IRenderable
+    public class Axies : RenderElement
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Axies"/> class.
-        /// </summary>
         public Axies()
         {
             Name = "Design Time Axies";
         }
-        
-        /// <summary>
-        /// Render to the provided instance of OpenGL.
-        /// </summary>
-        /// <param name="gl">The OpenGL instance.</param>
-        /// <param name="renderMode">The render mode.</param>
-        public void Render(OpenGL gl, RenderMode renderMode)
+
+        public override void Render(OpenGL gl, RenderMode renderMode)
         {
-            //  Design time primitives render only in design mode.
-            if (renderMode != RenderMode.Design)
-                return;
-
-            //  If we do not have the display list, we must create it.
-            //  Otherwise, we can simple call the display list.
-            if (displayList == null)
-                CreateDisplayList(gl);
-            else
-                displayList.Call(gl);
-        }
-
-        /// <summary>
-        /// Creates the display list. This function draws the
-        /// geometry as well as compiling it.
-        /// </summary>
-        private void CreateDisplayList(OpenGL gl)
-        {
-            // Create the display list. 
-            displayList = new DisplayList();
-
-            // Generate the display list and 
-            displayList.Generate(gl);
-            displayList.New(gl, DisplayList.DisplayListMode.CompileAndExecute);
-
             // Push all attributes, disable lighting and depth testing.
             gl.PushAttrib(OpenGL.GL_CURRENT_BIT | OpenGL.GL_ENABLE_BIT |
                 OpenGL.GL_LINE_BIT | OpenGL.GL_DEPTH_BUFFER_BIT);
@@ -82,15 +58,6 @@ namespace SharpGL.SceneGraph.Primitives
 
             // Restore attributes.
             gl.PopAttrib();
-
-            // End the display list.
-            displayList.End(gl);
         }
-
-        /// <summary>
-        /// The internal display list.
-        /// </summary>
-        [XmlIgnore]
-        private DisplayList displayList;
     }
 }
